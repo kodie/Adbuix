@@ -1,0 +1,103 @@
+' Gambas class file
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+
+  TabStrip1[0].Caption = "General"
+  TabStrip1[1].Caption = "File Mgr"
+  TabStrip1[2].Caption = "App Mgr"
+  TabStrip1[3].Caption = "Logs"
+  
+  Tab0Txt1.Add("nautilus")
+  Tab0Txt1.Add("konqueror")
+  Tab0Txt2.Add("gedit")
+  Tab0Txt2.Add("cream")
+
+  Tab0Radio2.Value = Global.Settings["General/HideMain", -1]
+  Tab0Radio5.Value = Global.Settings["General/AlwaysShowDevices", 0]
+  Tab0Txt1.Text = Global.Settings["General/FileManager", "nautilus"]
+  Tab0Txt2.Text = Global.Settings["General/TextEditor", "gedit"]
+
+  Tab1Txt1.Text = Global.Settings["FileManager/DefaultLocal", "/"]
+  Tab1Txt2.Text = Global.Settings["FileManager/DefaultRemote", "/"]
+
+  Tab2Radio0.Value = Global.Settings["AppManager/HideExt", -1]
+  Tab2Radio1.Value = Global.Settings["AppManager/OnlyApk", -1]
+
+  Tab3Radio1.Value = Global.Settings["AppLogs/Enable", -1]
+  Tab3Radio2.Value = Global.Settings["AppLogs/LogTR", 0]
+  Tab3Spin1.Value = Global.Settings["AppLogs/NumbLogs", 5]
+  Tab3Txt1.Text = Global.Settings["AppLogs/LogsPath", "/usr/share/adbuix/logs"]
+
+  IF Tab2Radio1.Value = FALSE THEN
+  Tab2Radio0.Value = FALSE
+  Tab2Radio0.Enabled = FALSE
+  ENDIF
+END
+
+PUBLIC SUB BtnSave_Click()
+  'Save Button
+  Global.Settings["General/HideMain"] = Tab0Radio2.Value
+  Global.Settings["General/AlwaysShowDevices"] = Tab0Radio5.Value
+  Global.Settings["General/FileManager"] = Tab0Txt1.Text
+  Global.Settings["General/TextEditor"] = Tab0Txt2.Text
+
+  Global.Settings["FileManager/DefaultLocal"] = Tab1Txt1.Text
+  Global.Settings["FileManager/DefaultRemote"] = Tab1Txt2.Text
+
+  Global.Settings["AppManager/HideExt"] = Tab2Radio0.Value
+  Global.Settings["AppManager/OnlyApk"] = Tab2Radio1.Value
+
+  Global.Settings["AppLogs/Enable"] = Tab3Radio1.Value
+  Global.Settings["AppLogs/LogTR"] = Tab3Radio2.Value
+  Global.Settings["AppLogs/NumbLogs"] = Tab3Spin1.Value
+  Global.Settings["AppLogs/LogsPath"] = Tab3Txt1.Text
+
+  ME.Close
+END
+
+PUBLIC SUB BtnCancel_Click()
+  ME.Close
+END
+
+PUBLIC SUB Tab1Btn1_Click()
+  IF Dialog.SelectDirectory() THEN RETURN
+  Tab1Txt1.Text = Dialog.Path
+END
+
+PUBLIC SUB Tab1Btn2_Click()
+  IF Dialog.SelectDirectory() THEN RETURN
+  Tab1Txt2.Text = Dialog.Path
+END
+
+PUBLIC SUB Tab2Radio1_Click()
+  IF Tab2Radio1.Value = FALSE THEN
+    Tab2Radio0.Value = FALSE
+    Tab2Radio0.Enabled = FALSE
+  ELSE 
+    Tab2Radio0.Enabled = TRUE
+  ENDIF
+END
+
+PUBLIC SUB Tab3Btn1_Click()
+  IF Dialog.SelectDirectory() THEN RETURN
+  Tab3Txt1.Text = Dialog.Path
+END
+
+PUBLIC SUB TabStrip1_Click()
+
+  
+
+END

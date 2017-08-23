@@ -1,0 +1,19 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,53,26)
+  Text = ("Adbuix Partition Manager")
+  Icon = Picture["chart_pie.png"]
+  Border = Window.Fixed
+  { ColumnView1 ColumnView
+    MoveScaled(1,1,51,19)
+  }
+  { Button1 Button
+    MoveScaled(9,21,15,4)
+    Text = ("Add")
+  }
+  { Button2 Button
+    MoveScaled(25,21,16,4)
+    Text = ("Remove")
+  }
+}

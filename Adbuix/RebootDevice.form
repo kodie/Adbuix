@@ -1,0 +1,39 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,46,28)
+  Text = ("Adbuix Device Reboot")
+  Icon = Picture["disconnect.png"]
+  Border = Window.Fixed
+  { Button1 Button
+    MoveScaled(19,24,12,3)
+    Text = ("Ok")
+    Picture = Picture["accept.png"]
+  }
+  { Button2 Button
+    MoveScaled(32,24,12,3)
+    Text = ("Cancel")
+    Picture = Picture["cancel.png"]
+  }
+  { Label1 Label
+    MoveScaled(8,10,32,3)
+    Text = ("What do you want the device to do?")
+  }
+  { ComboBox1 ComboBox
+    MoveScaled(8,13,34,3)
+    Text = ("ComboBox1")
+    ReadOnly = True
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(0,0,59,10)
+    Picture = Picture["androidreboot.png"]
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(8,18,35,6)
+    Text = ("[Place Holder]")
+  }
+  { PictureBox2 PictureBox
+    MoveScaled(2,12,5,5)
+    Picture = Picture["powericon.png"]
+  }
+}

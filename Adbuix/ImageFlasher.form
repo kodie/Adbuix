@@ -1,0 +1,41 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,53,14)
+  Text = ("Adbuix Image Flasher")
+  Icon = Picture["brick.png"]
+  Border = Window.Fixed
+  { TextBox1 TextBox
+    MoveScaled(15,1,24,3)
+    Text = ("")
+  }
+  { ComboBox1 ComboBox
+    MoveScaled(15,5,18,3)
+    Text = ("ComboBox1")
+    ReadOnly = True
+  }
+  { Button1 Button
+    MoveScaled(40,1,10,3)
+    Text = ("Browse")
+  }
+  { Button2 Button
+    MoveScaled(25,10,12,3)
+    Text = ("Flash")
+    Picture = Picture["accept.png"]
+  }
+  { Label1 Label
+    MoveScaled(0,1,12,3)
+    Text = ("File to Flash:")
+    Alignment = Align.Right
+  }
+  { Label2 Label
+    MoveScaled(-1,5,13,3)
+    Text = ("Type of Flash:")
+    Alignment = Align.Right
+  }
+  { Button3 Button
+    MoveScaled(38,10,12,3)
+    Text = ("Cancel")
+    Picture = Picture["cancel.png"]
+  }
+}

@@ -1,0 +1,141 @@
+' Gambas module file
+PRIVATE $shellProcess AS Process
+PRIVATE $shellText AS String
+
+PUBLIC SUB Process_Read()
+  DIM sLine AS String
+  'When a shell command is ran, take the output and put it in a string.
+  READ #LAST, sLine, -256
+  $shellText = $shellText & sLine
+
+  IF Global.Settings["AppLogs/LogTR", 0] = -1 THEN GlobalFunc.WriteLog(sLine, "TR")
+END
+
+PUBLIC SUB Process_Error(errorMsg AS String)
+  GlobalFunc.WriteLog(errorMsg, "1E")
+  Message.Error(errorMsg)
+  Main.Close
+END
+
+PUBLIC SUB ADBKill() AS Boolean
+  $shellText = NULL
+  $shellProcess = SHELL Global.ADBPath & " kill-server" WAIT FOR READ
+  IF $shellText = NULL THEN 
+    GlobalFunc.WriteLog("ADB was successfully shutdown.", "1")
+    RETURN TRUE
+  ELSE 
+    Process_Error($shellText)
+  ENDIF
+
+  $shellText = NULL
+  $shellProcess.Close()
+END
+
+
+PUBLIC SUB ADBStart() AS Boolean
+  DIM adbPath AS String
+  DIM splitShell AS String[]
+
+  $shellText = NULL
+  IF Exist(Global.ADBPath) THEN 
+    $shellProcess = SHELL Global.ADBPath & " start-server" WAIT FOR READ
+    splitShell = Split($shellText, "\n", "", TRUE)
+    IF splitShell.Count > 0 THEN 
+      IF splitShell[0] = "* daemon not running. starting it now *" THEN 
+        GlobalFunc.WriteLog("Starting ADB...", "1")
+        IF splitShell[1] = "* daemon started successfully *" THEN
+          GlobalFunc.WriteLog("ADB started successfully.", "1")
+          $shellText = NULL
+          RETURN TRUE
+        ELSE 
+          Process_Error(splitShell[1])
+        ENDIF
+      ELSE 
+        Process_Error(splitShell[0])
+      ENDIF 
+    ELSE 
+      GlobalFunc.WriteLog("ADB is already running.", "1")
+      $shellText = NULL
+      RETURN TRUE
+    ENDIF
+  ELSE 
+    Process_Error("Could not find ADB file.")
+  ENDIF
+
+  $shellText = NULL
+  $shellProcess.Close()
+END
+
+ PUBLIC SUB GetDevices(OPTIONAL DeviceCount AS Integer) AS Integer
+   DIM splitShell AS String[]
+   DIM splitLine AS String[]
+   DIM i AS Integer
+   DIM z AS Integer
+
+  DeviceCount = 0
+  Global.AttachedDevices.Clear()
+
+  $shellText = NULL
+  $shellProcess = SHELL Global.ADBPath & " devices" WAIT FOR READ
+  splitShell = Split($shellText, "\n", "", TRUE)
+
+  IF splitShell.Count > 1 THEN
+    FOR i = 1 TO splitShell.Count - 1
+      z = i - 1
+      splitLine = Split(splitShell[i], "\t", "", TRUE)
+      Global.AttachedDevices[z, 0] = splitLine[0]
+      Global.AttachedDevices[z, 1] = splitLine[1]
+      DeviceCount = DeviceCount + 1
+    NEXT
+  ENDIF
+
+  RETURN DeviceCount
+
+  $shellText = NULL
+  $shellProcess.Close()
+END
+
+PUBLIC SUB RemountDevice(DeviceSN AS String) AS Boolean
+  $shellText = NULL
+  $shellProcess = SHELL Global.ADBPath & " -s " & DeviceSN & " remount" WAIT FOR READ
+
+  IF InStr($shellText, "remount succeeded") THEN 
+    GlobalFunc.WriteLog("Device remounted.", "1")
+    RETURN TRUE
+  ELSE 
+    GlobalFunc.WriteLog("Device could not be remounted:", "1")
+    GlobalFunc.WriteLog($shellText, "1")
+  ENDIF
+
+  $shellText = NULL
+  $shellProcess.Close()
+END
+
+PUBLIC SUB DeviceState(DeviceSN AS String) AS String
+  DIM i AS Integer
+  DIM DeviceCount AS Integer
+  DIM DeviceState AS String
+
+  DeviceCount = GlobalFunc.GetDevices()
+
+  FOR i = 1 TO DeviceCount
+    IF Global.DeviceSN = Global.AttachedDevices[(i - 1), 0] THEN 
+      DeviceState = Global.AttachedDevices[(i - 1), 1]
+    ENDIF
+  NEXT
+
+  IF DeviceState = "device" THEN DeviceState = "ready"
+
+  RETURN DeviceState
+END
+
+PUBLIC SUB WriteLog(LogText AS String, OPTIONAL LogID AS String)
+  IF LogID = NULL THEN 
+    LogID = "0"
+  ENDIF
+
+  LogText = "[" & LogID & "] " & LogText
+
+  PRINT #Global.LogFile, LogText
+  PRINT LogText
+END

@@ -1,0 +1,115 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,49,27)
+  Text = ("Adbuix")
+  Icon = Picture["adbuixlogo_icon.png"]
+  Border = Window.Fixed
+  { Menu1 Menu
+    Text = ("File")
+    { Menu2 Menu
+      Text = ("Switch Device")
+      Picture = Picture["phone.png"]
+    }
+    { Menu3 Menu
+      Text = ("Reboot Device")
+      Picture = Picture["disconnect.png"]
+    }
+    { Menu4 Menu
+      Text = ("")
+    }
+    { Menu5 Menu
+      Text = ("Exit")
+      Picture = Picture["cancel.png"]
+    }
+  }
+  { Menu6 Menu
+    Text = ("Options")
+    { Menu7 Menu
+      Text = ("Application Logs")
+      Picture = Picture["script_code.png"]
+    }
+    { Menu15 Menu
+      Text = ("Device Log")
+      Picture = Picture["script_code_red.png"]
+    }
+    { Menu8 Menu
+      Text = ("")
+    }
+    { Menu9 Menu
+      Text = ("Settings")
+      Picture = Picture["cog.png"]
+    }
+  }
+  { Menu10 Menu
+    Text = ("Help")
+    { Menu17 Menu
+      Text = ("Device Info")
+      Picture = Picture["chart_bar.png"]
+    }
+    { Menu11 Menu
+      Text = ("Check For Updates")
+      Picture = Picture["world.png"]
+      Enabled = False
+      Visible = False
+    }
+    { Menu16 Menu
+      Text = ("Discuss Adbuix")
+      Picture = Picture["comment.png"]
+    }
+    { Menu12 Menu
+      Text = ("")
+    }
+    { Menu13 Menu
+      Text = ("Online Help")
+      Picture = Picture["help.png"]
+      Enabled = False
+      Visible = False
+    }
+    { Menu14 Menu
+      Text = ("About Adbuix")
+      Picture = Picture["information.png"]
+    }
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(-1,0,64,17)
+    Picture = Picture["logo1.jpg"]
+  }
+  { Button3 Button
+    MoveScaled(26,14,22,4)
+    Text = ("File Manager")
+    Picture = Picture["server.png"]
+  }
+  { Separator1 Separator
+    MoveScaled(24,14,1,10)
+  }
+  { Button4 Button
+    MoveScaled(1,14,22,4)
+    Text = ("Application Manager")
+    Picture = Picture["application_cascade.png"]
+  }
+  { Button1 Button
+    MoveScaled(1,25,22,4)
+    Visible = False
+    Enabled = False
+    Text = ("Partition Manager")
+    Picture = Picture["chart_pie.png"]
+  }
+  { Button2 Button
+    MoveScaled(26,19,22,4)
+    Text = ("Shell Console")
+    Picture = Picture["application_xp_terminal.png"]
+  }
+  { Button5 Button
+    MoveScaled(1,19,22,4)
+    Text = ("Image Flasher")
+    Picture = Picture["brick.png"]
+  }
+  { Button6 Button
+    MoveScaled(26,25,22,4)
+    Visible = False
+    Enabled = False
+    Text = ("Music Manager")
+    Picture = Picture["sound.png"]
+  }
+}

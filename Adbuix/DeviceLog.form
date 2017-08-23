@@ -1,0 +1,27 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,58,41)
+  Text = ("Adbuix Device Log Viewer")
+  Icon = Picture["script_code_red.png"]
+  Border = Window.Fixed
+  { TextArea1 TextArea
+    MoveScaled(1,1,56,34)
+    Text = ("TextArea1")
+  }
+  { Button1 Button
+    MoveScaled(20,36,18,4)
+    Text = ("Save")
+    Picture = Picture["script_go.png"]
+  }
+  { Button3 Button
+    MoveScaled(39,36,18,4)
+    Text = ("Exit")
+    Picture = Picture["cancel.png"]
+  }
+  { Button4 Button
+    MoveScaled(1,36,18,4)
+    Text = ("Refresh")
+    Picture = Picture["arrow_refresh.png"]
+  }
+}

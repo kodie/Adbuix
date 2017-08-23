@@ -1,0 +1,34 @@
+' Gambas class file
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+
+  TabStrip1[0].Caption = "Author"
+  TabStrip1[1].Caption = "Credits"
+  TabStrip1[2].Caption = "Licence"
+
+  TextArea1.ReadOnly = TRUE
+  TextArea2.ReadOnly = TRUE
+END
+
+PUBLIC SUB Button1_Click()
+  About.Close
+END
+
+PUBLIC SUB TextLabel2_MouseDown()
+
+  SHELL ("firefox http://kodieg.com")
+
+END

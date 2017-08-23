@@ -1,0 +1,79 @@
+' Gambas class file
+
+PRIVATE $shellProcess AS Process
+PRIVATE $shellText AS String
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+
+  ComboBox1.Add("Shutdown", 0)
+  ComboBox1.Add("Reboot", 1)
+  ComboBox1.Add("Recovery", 2)
+  ComboBox1.Add("Bootloader", 3)
+END
+
+PUBLIC SUB Process_Read()
+  DIM sLine AS String
+  'When a shell command is ran, take the output and put it in a string.
+  READ #LAST, sLine, -256
+  $shellText = $shellText & sLine
+
+  IF Global.Settings["AppLogs/LogTR", 0] = -1 THEN GlobalFunc.WriteLog(sLine, "TR")
+END
+
+PUBLIC SUB Process_Error(errorMsg AS String)
+  'If process error occurs...
+  'Display error message with ok and cancel buttons.
+  PRINT errorMsg
+  SELECT Message.Error(errorMsg, "Ok", "Cancel")
+  CASE 1
+    'If user clicks "ok", refresh the lists.
+   ' RefreshList()
+  CASE 2
+    'If user clicks "cancel", close the file manager.
+    ME.Close
+  END SELECT
+END
+
+PUBLIC SUB Button1_Click()
+  DIM rebootType AS String
+
+  IF ComboBox1.Index = 0 THEN rebootType = "shell shutdown"
+  IF ComboBox1.Index = 1 THEN rebootType = "reboot"
+  IF ComboBox1.Index = 2 THEN rebootType = "reboot recovery"
+  IF ComboBox1.Index = 3 THEN rebootType = "reboot bootloader"
+
+  $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " " & rebootType WAIT FOR READ
+
+  IF $shellText = NULL THEN 
+    'Do Nothing
+  ELSE 
+    Process_Error($shellText)
+  ENDIF
+END
+
+PUBLIC SUB Button2_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB ComboBox1_Click()
+
+  IF ComboBox1.Index = 0 THEN TextLabel1.Text = "Shuts your Android device down and completely off."
+  IF ComboBox1.Index = 1 THEN TextLabel1.Text = "Shuts your Android device down and starts it up again."
+  IF ComboBox1.Index = 2 THEN TextLabel1.Text = "Shuts your Android device down and starts it up in Recovery Mode."
+  IF ComboBox1.Index = 3 THEN TextLabel1.Text = "Shuts your Android device down and starts it up in Bootloader Mode."
+END

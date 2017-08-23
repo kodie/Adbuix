@@ -1,0 +1,128 @@
+' Gambas class file
+
+
+PUBLIC SUB Form_Open()
+  ME.Center
+  Startup.Show()
+END
+
+PUBLIC SUB Form_Close()
+  GlobalFunc.WriteLog("Adbuix closed.")
+  Global.LogFile.Close()
+END
+
+
+PUBLIC SUB Button3_Click()
+'File Manager Button
+FileManager.Show
+END
+
+PUBLIC SUB Button4_Click()
+
+  AppManager.Show
+
+END
+
+
+PUBLIC SUB Form_KeyPress()
+
+  IF Key.Code = Key.F1 THEN
+    DevForm.Show()
+  ENDIF
+
+END
+
+PUBLIC SUB Button1_Click()
+
+  PartitionManager.Show()
+
+END
+
+PUBLIC SUB Menu2_Click()
+
+  SelectDevice.ShowModal()
+  GlobalFunc.RemountDevice(Global.DeviceSN)
+
+END
+
+PUBLIC SUB Menu3_Click()
+
+  RebootDevice.Show
+
+END
+
+PUBLIC SUB Menu9_Click()
+
+  Options.show
+
+END
+
+PUBLIC SUB Menu13_Click()
+
+    SELECT Message.Question("Adbuix Help is only avalible online for the time being.\nWould you like to visit the Adbuix Help Page now?", "Yes", "No")
+  CASE 1
+    SHELL ("firefox http://kodieg.com/?adbuix/help")
+  CASE 2
+    'Do Nothing
+  END SELECT
+
+END
+
+PUBLIC SUB Menu14_Click()
+
+   About.Show()
+
+END
+
+PUBLIC SUB Menu7_Click()
+
+  AppLogs.Show()
+
+END
+
+PUBLIC SUB Menu15_Click()
+
+  DeviceLog.Show()
+
+END
+
+PUBLIC SUB Menu11_Click()
+
+  UpdateCheck.Show()
+
+END
+
+PUBLIC SUB Menu5_Click()
+
+  Main.Close()
+
+END
+
+PUBLIC SUB Menu16_Click()
+
+  SELECT Message.Question("Would you like to visit the Adbuix thread at XDA-Developers.com?", "Yes", "No")
+    CASE 1
+      SHELL ("firefox http://forum.xda-developers.com/showthread.php?t=641385")
+    CASE 2
+      'Do Nothing
+  END SELECT
+
+END
+
+PUBLIC SUB Button2_Click()
+
+  Shell.Show()
+
+END
+
+PUBLIC SUB Button5_Click()
+
+  ImageFlasher.Show()
+
+END
+
+PUBLIC SUB Menu17_Click()
+
+  DeviceInfo.Show()
+
+END

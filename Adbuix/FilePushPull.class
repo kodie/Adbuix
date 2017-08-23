@@ -1,0 +1,84 @@
+' Gambas class file
+PRIVATE $timerMode AS Integer
+PRIVATE $shellProcess AS Process
+PRIVATE $shellText AS String
+PRIVATE $closeWarning AS Boolean
+PRIVATE $notifyText AS String
+
+PUBLIC SUB _new(fileMode AS Integer, pathFrom AS String, pathTo AS String, OPTIONAL notifyText AS String)
+  DIM fileName AS String
+  DIM lastSlash AS Integer
+
+  $notifyText = notifyText
+
+  lastSlash = RInStr(pathFrom, "/", 0)
+  fileName = Trim(Mid(pathFrom, (lastSlash + 1), Len(pathFrom)))
+
+  IF fileMode = 0 THEN 
+    ME.Caption = "Downloading..."
+    Label1.Text = "Downloading " & fileName & "..."
+    PRINT "Downloading..." 
+    PRINT pathFrom & " to..."
+    PRINT pathTo
+
+    $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " pull \"" &/ pathFrom & "\" \"" &/ pathTo & "\"" FOR READ
+  ENDIF
+
+  IF fileMode = 1 THEN 
+    ME.Caption = "Uploading..."
+    Label1.Text = "Uploading " & fileName & "..."
+    PRINT "Uploading..." 
+    PRINT pathFrom & " to..."
+    PRINT pathTo
+
+    $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " push \"" &/ pathFrom & "\" \"" &/ pathTo & "\"" FOR READ
+  ENDIF
+END
+
+PUBLIC SUB Form_Open()
+  Timer1.Start
+  $closeWarning = TRUE
+END
+
+PUBLIC SUB Form_Close()
+  IF $closeWarning = TRUE THEN 
+    Message.Warning("Current file will continue to be processed.")
+  ENDIF
+END
+
+
+PUBLIC SUB Process_Read()
+  DIM sLine AS String
+  'When a shell command is ran, take the output and put it in a string.
+  READ #LAST, sLine, -256
+  $shellText = $shellText & sLine
+END
+
+PUBLIC SUB Process_Error(errorMsg AS String)
+  PRINT errorMsg
+  IF InStr(errorMsg, "KB/s") & InStr(errorMsg, "bytes in") THEN 
+    Label1.Text = "Done!"
+    PRINT "File Transfer Complete!"
+    IF $notifyText = NULL THEN 
+      'Do Nothing
+    ELSE 
+      Message.Info($notifyText)
+    ENDIF
+  ELSE
+    Message.Error(errorMsg, "Ok")
+    PRINT "File Transfer Failed."
+  ENDIF
+  $closeWarning = FALSE
+  ME.Close
+END
+
+PUBLIC SUB Timer1_Timer()
+  IF Slider1.Value = 0 THEN $timerMode = 0
+  IF Slider1.Value = 99 THEN $timerMode = 1
+
+  IF $timerMode = 0 THEN
+    Slider1.Value = Slider1.Value + 1
+  ELSE 
+    Slider1.Value = Slider1.Value - 1
+  ENDIF
+END

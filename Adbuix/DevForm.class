@@ -1,0 +1,84 @@
+' Gambas class file
+
+
+PUBLIC SUB Button1_Click()
+
+  IF GlobalFunc.ADBStart() = TRUE THEN
+    Message.Info("ADB was successfully started.")
+  ENDIF
+
+END
+
+
+PUBLIC SUB Button2_Click()
+
+  IF GlobalFunc.ADBKill() = TRUE THEN
+    Message.Info("ADB was successfully shutdown.")
+  ENDIF
+
+END
+
+PUBLIC SUB Button3_Click()
+  DIM DeviceCount AS Integer
+
+  DeviceCount = GlobalFunc.GetDevices()
+
+  Message.Info("Number of devices found: " & DeviceCount)
+END
+
+PUBLIC SUB Button4_Click()
+
+  IF GlobalFunc.RemountDevice(Global.DeviceSN) = TRUE THEN 
+    Message.Info(Global.DeviceSN & " was successfully remounted.")
+  ENDIF
+
+END
+
+PUBLIC SUB Form_Open()
+
+  
+
+END
+
+PUBLIC SUB Button5_Click()
+
+  PartitionManager.Show()
+
+END
+
+PUBLIC SUB Button6_Click()
+
+  Shell.Show()
+
+END
+
+PUBLIC SUB Button7_Click()
+  DIM textArray AS String[7]
+  DIM i AS Integer
+  DIM z AS Integer
+  DIM newString AS String
+  DIM setText AS String
+
+  setText = Replace(TextBox1.Text, "     ", " - ")
+  textArray = Split(setText, " ", "", TRUE)
+
+  IF textArray.Count > 7 THEN 
+    FOR i = 7 TO textArray.Count - 1
+      textArray[6] = textArray[6] & " " & textArray[i]
+    NEXT 
+  ENDIF
+
+  IF Mid(textArray[0], 1, 1) = "d" THEN 
+    FOR i = 3 TO 6
+      z = i + 1
+      textArray[z] = textArray[i]
+    NEXT
+    textArray[3] = "-"
+  ENDIF
+
+  FOR i = 0 TO 6
+    newString = newString & " " & textArray[i]
+  NEXT 
+
+  TextBox1.Text = newString
+END

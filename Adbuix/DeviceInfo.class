@@ -1,0 +1,94 @@
+' Gambas class file
+
+PRIVATE $shellProcess AS Process
+PRIVATE $shellText AS String
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+
+  ColumnView1.Columns.Count = 2
+
+  GetInfo()
+END
+
+PUBLIC SUB Process_Read()
+  DIM sLine AS String
+  'When a shell command is ran, take the output and put it in a string.
+  READ #LAST, sLine, -256
+  $shellText = $shellText & sLine
+END
+
+PRIVATE FUNCTION GetInfo()
+  ColumnView1.Clear()
+
+  ColumnView1.Add(0, "Device Serial Number")
+  ColumnView1[0][1] = Global.DeviceSN
+
+  ColumnView1.Add(1, "Device State")
+  ColumnView1[1][1] = GlobalFunc.DeviceState(Global.DeviceSN)
+
+  ColumnView1.Add(2, "ADB Deamon Version")
+  ColumnView1[2][1] = GetADBVersion()
+
+  ColumnView1.Add(3, "ADB Path")
+  ColumnView1[3][1] = Global.ADBPath
+
+  ColumnView1.Add(4, "Current Log File")
+  ColumnView1[4][1] = GetLogFile()
+
+  ColumnView1.Add(5, "# Of Devices Connected")
+  ColumnView1[5][1] = GlobalFunc.GetDevices()
+END
+
+PRIVATE FUNCTION GetADBVersion() AS String
+  DIM lastSpace AS Integer
+  DIM adbVersion AS String
+
+  $shellProcess = SHELL Global.ADBPath & " version" WAIT FOR READ
+
+  lastSpace = RInStr($shellText, " ", 0)
+  adbVersion = Trim(Mid($shellText, (lastSpace + 1), Len($shellText)))
+
+  RETURN adbVersion
+
+  $shellText = NULL
+  $shellProcess.Close()
+END
+
+PRIVATE FUNCTION GetLogFile() AS String
+  DIM theDate AS String
+  DIM logFile AS String
+
+  theDate = Date(Now)
+  theDate = Replace(theDate, "/", "")
+  logFile = "adbuix" & theDate & ".log"
+
+  RETURN logFile
+END
+
+
+
+
+PUBLIC SUB Button1_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB Button2_Click()
+
+  GetInfo()
+
+END

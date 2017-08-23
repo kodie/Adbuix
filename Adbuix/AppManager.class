@@ -1,0 +1,301 @@
+' Gambas class file
+PRIVATE $shellProcess AS Process
+PRIVATE $shellText AS String
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+  RefreshList()
+END
+
+PUBLIC SUB Process_Read()
+  DIM sLine AS String
+  'When a shell command is ran, take the output and put it in a string.
+  READ #LAST, sLine, -256
+  $shellText = $shellText & sLine
+
+  IF Global.Settings["AppLogs/LogTR", 0] = -1 THEN GlobalFunc.WriteLog(sLine, "TR")
+END
+
+PUBLIC SUB Process_Error(errorMsg AS String)
+  'If process error occurs...
+  'Display error message with ok and cancel buttons.
+  GlobalFunc.WriteLog(errorMsg, "3")
+  SELECT Message.Error(errorMsg, "Ok", "Cancel")
+  CASE 1
+    'If user clicks "ok", refresh the lists.
+    RefreshList()
+  CASE 2
+    'If user clicks "cancel", close the file manager.
+    ME.Close
+  END SELECT
+END
+
+PRIVATE SUB RefreshList(OPTIONAL searchStr AS String)
+
+  IF searchStr = NULL THEN 
+    GlobalFunc.WriteLog("Searching for applications with \"" & searchStr & "\" in the file name...", "3")
+  ELSE
+    GlobalFunc.WriteLog("Searching for all applications...", "3")
+  ENDIF
+
+  'Clear the list.
+  ListView1.Clear
+
+  IF TglNormal.Value = TRUE THEN 
+    GlobalFunc.WriteLog("Showing normal applications. /data/app/", "3")
+    GetApps("/data/app/", searchStr)
+  ENDIF
+
+  IF TglPrivate.Value = TRUE THEN 
+    GlobalFunc.WriteLog("Showing private applications. /data/app-private/", "3")
+    GetApps("/data/app-private/", searchStr)
+  ENDIF
+
+  IF TglSystem.Value = TRUE THEN 
+    GlobalFunc.WriteLog("Showing system applications. /system/app/", "3")
+    GetApps("/system/app/", searchStr)
+  ENDIF
+END
+
+PRIVATE SUB GetApps(TheDir AS String, OPTIONAL searchStr AS String)
+  DIM splitShell AS String[]
+  DIM PicIcon AS Picture
+  DIM i AS Integer
+  DIM z AS Integer
+  DIM sortString AS String
+  DIM lastDot AS String
+  DIM fileExt AS String
+  DIM fileName AS String
+  DIM fileDisplay AS String
+  DIM doShow AS Boolean
+
+    'Run the shell command.
+    sortString = " -p1"
+    IF InStr(Global.DeviceSN, "emulator") THEN sortString = ""
+    $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " shell ls \"" & TheDir & "\"" & sortString & " | sort" WAIT FOR READ
+
+    'Split the shell output into an array.
+    splitShell = Split($shellText, "\n", "", TRUE)
+
+    'If there is only one item, see if it was an error.
+    IF splitShell.Count = 1 THEN 
+      'If it was an error...
+      IF InStr(splitShell[0], "ls: " & TheDir & ":") THEN 
+        'Then clear the array, close the process, and trigger the error.
+        $shellText = NULL
+        $shellProcess.Close
+        Process_Error(splitShell[0])
+      ENDIF 
+    ENDIF
+
+    IF TheDir = "/data/app/" THEN PicIcon = Picture.Load("application.png")
+    IF TheDir = "/data/app-private/" THEN PicIcon = Picture.Load("application_key.png")
+    IF TheDir = "/system/app/" THEN PicIcon = Picture.Load("application_lightning.png")
+
+    'Loop through files only if any were found.
+    IF splitShell.Count > 0 THEN 
+      FOR i = 0 TO splitShell.Count - 1
+      z = ListView1.Count + 1
+
+      lastDot = RInStr(splitShell[i], ".", 0)
+      fileExt = Trim(Mid(splitShell[i], (lastDot + 1), Len(splitShell[i])))
+      fileName = Trim(Mid(splitShell[i], 1, (lastDot - 1)))
+
+      IF Global.Settings["AppManager/HideExt", -1] = -1 THEN
+        fileDisplay = fileName
+      ELSE 
+        fileDisplay = fileName & "." & fileExt
+      ENDIF 
+
+      'Add the item to the list.
+
+      doShow = TRUE
+
+      IF Global.Settings["AppManager/OnlyApk", -1] = -1 THEN
+        IF fileExt = "apk" THEN
+          doShow = TRUE
+        ELSE 
+          doShow = FALSE
+        ENDIF
+      ENDIF
+
+      IF searchStr = NULL THEN 
+        doShow = TRUE
+      ELSE 
+        IF InStr(fileDisplay, searchStr) THEN 
+          doShow = TRUE
+        ELSE 
+          doShow = FALSE
+        ENDIF
+      ENDIF
+
+      IF doShow = TRUE THEN 
+        ListView1.Add(z & "-" & TheDir, fileDisplay, PicIcon)
+      ENDIF
+
+      NEXT
+
+    ELSE 
+      GlobalFunc.WriteLog("No Applications Found.", "3")
+      'Catch any errors.
+      CATCH 
+    ENDIF
+
+    'Clear the array and close the process.
+    $shellText = NULL
+    $shellProcess.Close
+END
+
+
+PUBLIC SUB Button2_Click()
+  DIM fileForm AS FilePushPull
+  DIM newAppPath AS String
+  DIM lastSlash AS Integer
+  DIM fileName AS String
+
+  AppInstall.ShowModal()
+
+  IF Global.TempString = NULL THEN
+    PRINT "User clicked cancel."
+  ELSE
+    IF Global.TempString = "Normal" THEN newAppPath = "/data/app/"
+    IF Global.TempString = "Private" THEN newAppPath = "/data/app-private/"
+    IF Global.TempString = "System" THEN newAppPath = "/system/app/"
+
+    Dialog.Path = User.Home &/ "Desktop"
+    Dialog.Filter = ["*.apk", "Android Package File"]
+    IF Dialog.OpenFile(TRUE) THEN RETURN
+
+    ListView1.MoveCurrent()
+    lastSlash = RInStr(Dialog.Path, "/", 0) + 1
+    fileName = Mid(Dialog.Path, lastSlash, Len(Dialog.Path))
+    fileForm = NEW FilePushPull(1, Dialog.Path, newAppPath &/ fileName, "Application installed successfully.")
+    fileForm.ShowModal()
+    RefreshList()
+
+    Global.TempString = NULL
+  ENDIF
+END
+
+PUBLIC SUB Button0_Click()
+  ME.Close
+END
+
+PUBLIC SUB TglNormal_Click()
+  RefreshList()
+END
+
+PUBLIC SUB TglPrivate_Click()
+  RefreshList()
+END
+
+PUBLIC SUB TglSystem_Click()
+  RefreshList()
+END
+
+
+PUBLIC SUB Button3_Click()
+  DIM theDIR AS String
+  DIM firstDash AS Integer
+  DIM fullFile AS String
+
+  ListView1.MoveCurrent
+  IF ListView1.Current = NULL THEN 
+    Message.Error("No items were selected.")
+  ELSE 
+    SELECT Message.Question("Are you sure that you want to uninstall \"" & ListView1.Current.Text & "\"?", "Yes", "No")
+      CASE 1
+        firstDash = InStr(ListView1.Current.Key, "-", 0)
+        theDir = Mid(ListView1.Current.Key, (firstDash + 1), Len(ListView1.Current.Key))
+
+        IF Global.Settings["AppManager/HideExt", -1] = -1 THEN
+          fullFile = theDir &/ ListView1.Current.Text & ".apk"
+        ELSE 
+          fullFile = theDir &/ ListView1.Current.Text
+        ENDIF 
+        PRINT fullFile
+
+        $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " shell rm \"" &/ fullFile & "\"" WAIT FOR READ
+
+        IF $shellText = NULL THEN 
+          Message.Info("\"" & ListView1.Current.Text & "\" was successfully uninstalled.")
+          RefreshList()
+        ELSE
+          $shellText = NULL
+          $shellProcess.Close
+          Process_Error($shellText)
+        ENDIF
+
+        $shellText = NULL
+        $shellProcess.Close
+      CASE 2
+        PRINT "Uninstall Cancelled."
+    END SELECT
+  ENDIF
+
+END
+
+PUBLIC SUB TextBox1_GotFocus()
+  IF Trim(TextBox1.Text) = "Search..." THEN
+    TextBox1.Clear()
+  ENDIF
+END
+
+PUBLIC SUB TextBox1_LostFocus()
+  IF Trim(TextBox1.Text) = "" THEN
+    TextBox1.Text = "Search..."
+  ENDIF
+END
+
+PUBLIC SUB Button4_Click()
+  DIM theDIR AS String
+  DIM firstDash AS Integer
+  DIM fullFile AS String
+  DIM fileForm AS FilePushPull
+  DIM lastSlash AS Integer
+  DIM fileName AS String
+
+  ListView1.MoveCurrent
+
+  IF ListView1.Current = NULL THEN 
+    Message.Error("No items were selected.")
+  ELSE 
+    IF Dialog.SelectDirectory() THEN RETURN
+
+    firstDash = InStr(ListView1.Current.Key, "-", 0)
+    theDir = Mid(ListView1.Current.Key, (firstDash + 1), Len(ListView1.Current.Key))
+
+    IF Global.Settings["AppManager/HideExt", -1] = -1 THEN
+      fullFile = theDir &/ ListView1.Current.Text & ".apk"
+    ELSE 
+      fullFile = theDir &/ ListView1.Current.Text
+    ENDIF 
+
+    lastSlash = RInStr(fullFile, "/", 0) + 1
+    fileName = Mid(fullFile, lastSlash, Len(fullFile))
+    fileForm = NEW FilePushPull(0, fullFile, Dialog.Path &/ fileName, "Application successfully backed up.")
+    fileForm.ShowModal()
+  ENDIF
+END
+
+PUBLIC SUB Button5_Click()
+
+  IF TextBox1.Text = "Search..." THEN 
+    RefreshList()
+  ELSE 
+    RefreshList(TextBox1.Text)
+  ENDIF
+
+END

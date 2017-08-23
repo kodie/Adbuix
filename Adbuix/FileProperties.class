@@ -1,0 +1,124 @@
+' Gambas class file
+
+
+PUBLIC SUB ChangePermissions()
+  DIM OctalValue AS String[3]
+
+  OctalValue[0] = Mid(Txt_Octal.Text, 0)
+  OctalValue[1] = Left(Txt_Octal.Text, 1)
+  OctalValue[2] = Left(Txt_Octal.Text, 2)
+
+  IF Chk_OwnerRead.Value = TRUE THEN 
+    OctalValue[0] = OctalValue[0] + 4
+  ELSE 
+    OctalValue[0] = OctalValue[0] - 4
+  ENDIF
+
+  IF Chk_OwnerWrite.Value = TRUE THEN 
+    OctalValue[0] = OctalValue[0] + 2
+  ELSE 
+    OctalValue[0] = OctalValue[0] - 2
+  ENDIF
+
+  IF Chk_OwnerExecute.Value = TRUE THEN 
+    OctalValue[0] = OctalValue[0] + 1
+  ELSE 
+    OctalValue[0] = OctalValue[0] - 1
+  ENDIF
+
+
+  IF Chk_GroupRead.Value = TRUE THEN 
+    OctalValue[1] = OctalValue[1] + 4
+  ELSE 
+    OctalValue[1] = OctalValue[1] - 4
+  ENDIF
+
+  IF Chk_GroupWrite.Value = TRUE THEN 
+    OctalValue[1] = OctalValue[1] + 2
+  ELSE 
+    OctalValue[1] = OctalValue[1] - 2
+  ENDIF
+
+  IF Chk_GroupExecute.Value = TRUE THEN 
+    OctalValue[1] = OctalValue[1] + 1
+  ELSE 
+    OctalValue[1] = OctalValue[1] - 1
+  ENDIF
+
+
+  IF Chk_PublicRead.Value = TRUE THEN 
+    OctalValue[2] = OctalValue[2] + 4
+  ELSE 
+    OctalValue[2] = OctalValue[2] - 4
+  ENDIF
+
+  IF Chk_PublicWrite.Value = TRUE THEN 
+    OctalValue[2] = OctalValue[2] + 2
+  ELSE 
+    OctalValue[2] = OctalValue[2] - 2
+  ENDIF
+
+  IF Chk_PublicExecute.Value = TRUE THEN 
+    OctalValue[2] = OctalValue[2] + 1
+  ELSE 
+    OctalValue[2] = OctalValue[2] - 1
+  ENDIF
+
+  Txt_Octal.Text = OctalValue[0] & OctalValue[1] & OctalValue[2]
+
+END
+
+PUBLIC SUB Chk_OwnerRead_Click()
+  ChangePermissions()
+END
+
+PUBLIC SUB Chk_OwnerWrite_Click()
+  ChangePermissions()
+END
+
+PUBLIC SUB Chk_OwnerExecute_Click()
+  ChangePermissions()
+END
+
+PUBLIC SUB Chk_GroupRead_Click()
+  ChangePermissions()
+END
+
+PUBLIC SUB Chk_GroupWrite_Click()
+  ChangePermissions()
+END
+
+PUBLIC SUB Chk_GroupExecute_Click()
+  ChangePermissions()
+END
+
+PUBLIC SUB Chk_PublicRead_Click()
+  ChangePermissions()
+END
+
+PUBLIC SUB Chk_PublicWrite_Click()
+  ChangePermissions()
+END
+
+PUBLIC SUB Chk_PublicExecute_Click()
+  ChangePermissions()
+END
+
+PUBLIC SUB Form_Open()
+
+  Txt_Symbolic.Text = "----------"
+  Txt_Octal.Text = "000"
+
+END
+
+PUBLIC SUB Label12_MouseDown()
+
+  
+
+END
+
+PUBLIC SUB Label16_MouseDown()
+
+  
+
+END

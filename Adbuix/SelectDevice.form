@@ -1,0 +1,30 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,48,22)
+  Text = ("Select your Android device.")
+  Icon = Picture["phone.png"]
+  Border = Window.Fixed
+  { Label1 Label
+    MoveScaled(1,0,42,4)
+    Text = ("The following Android devices have been found.")
+  }
+  { Button1 Button
+    MoveScaled(27,18,9,3)
+    Text = ("Ok")
+    Picture = Picture["accept.png"]
+  }
+  { Button2 Button
+    MoveScaled(37,18,10,3)
+    Text = ("Cancel")
+    Picture = Picture["cancel.png"]
+  }
+  { ColumnView1 ColumnView
+    MoveScaled(1,4,46,13)
+  }
+  { Button4 Button
+    MoveScaled(1,18,25,3)
+    Text = ("Restart Server && Refresh")
+    Picture = Picture["arrow_refresh.png"]
+  }
+}

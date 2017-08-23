@@ -1,0 +1,29 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,40,10)
+  Mouse = Mouse.Wait
+  Text = ("[Place Holder]")
+  Icon = Picture["page_white_go.png"]
+  Border = Window.Fixed
+  SkipTaskbar = True
+  { Label1 Label
+    MoveScaled(1,1,38,2)
+    Text = ("[Place Holder]")
+  }
+  { Button1 Button
+    MoveScaled(27,6,12,3)
+    Enabled = False
+    Text = ("Cancel")
+    Picture = Picture["cancel.png"]
+  }
+  { Timer1 #Timer
+    #X = 0
+    #Y = 35
+    Delay = 10
+  }
+  { Slider1 Slider
+    MoveScaled(1,3,38,3)
+    Enabled = False
+  }
+}

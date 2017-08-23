@@ -1,0 +1,23 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,56,19)
+  Text = ("Adbuix Device Info")
+  Icon = Picture["chart_bar.png"]
+  Border = Window.Fixed
+  { ColumnView1 ColumnView
+    MoveScaled(1,1,54,13)
+    Header = False
+    ScrollBar = Scroll.Vertical
+  }
+  { Button1 Button
+    MoveScaled(42,15,13,3)
+    Text = ("Close")
+    Picture = Picture["accept.png"]
+  }
+  { Button2 Button
+    MoveScaled(28,15,13,3)
+    Text = ("Refresh")
+    Picture = Picture["arrow_refresh.png"]
+  }
+}

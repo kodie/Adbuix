@@ -1,0 +1,72 @@
+' Gambas class file
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+
+  ComboBox1.Add("Update File (.zip)", 0)
+  ComboBox1.Add("Recovery Image (.img)", 1)
+  ComboBox1.Add("Boot Image (.img)", 2)
+
+  IF InStr(Global.DeviceSN, "emulator") THEN 
+    Message.Error("This feature cannot be used on an emulator.")
+    ME.Close
+  ELSE
+    CheckDevice(0)
+  ENDIF
+END
+
+PRIVATE FUNCTION CheckDevice(modeID AS Integer)
+  DIM DeviceState AS String
+  DIM PopupMsg AS String
+
+  DeviceState = GlobalFunc.DeviceState(Global.DeviceSN)
+
+  IF modeID = 0 THEN
+    PopupMsg = "Your device needs to be in recovery mode.\nClick Ok to reboot your device into recovery mode now."
+  ELSE 
+    PopupMsg = "Your device should be rebooting into recovery mode now.\nPlease wait for it to finish booting up and then click Ok.\nYou will receive this message again if the device hasn't finished booting into recovery mode."
+  ENDIF
+
+  IF DeviceState = "recovery" THEN 
+    'Do Nothing
+  ELSE 
+    SELECT Message.Question(PopupMsg, "Ok", "Cancel")
+      CASE 1
+        IF modeID = 0 THEN
+          RebootDevice()
+        ELSE 
+          CheckDevice(1)
+        ENDIF
+      CASE 2
+        ME.Close
+    END SELECT
+  ENDIF
+END
+
+PRIVATE FUNCTION RebootDevice()
+  SHELL Global.ADBPath & " -s " & Global.DeviceSN & " reboot recovery" WAIT FOR READ
+  CheckDevice(1)
+END
+
+PUBLIC SUB Button3_Click()
+  ME.Close
+END
+
+PUBLIC SUB Button1_Click()
+  Dialog.Path = User.Home &/ "Desktop"
+  'Dialog.Filter = ["*.apk", "Android Package File"]
+  IF Dialog.OpenFile(TRUE) THEN RETURN
+  TextBox1.Text = Dialog.Path
+END

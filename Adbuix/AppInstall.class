@@ -1,0 +1,33 @@
+' Gambas class file
+
+
+PUBLIC SUB Form_Open()
+  ME.Center
+END
+
+PUBLIC SUB Button1_Click()
+  IF RadioButton1.Value = TRUE THEN Global.TempString = "Normal"
+  IF RadioButton2.Value = TRUE THEN Global.TempString = "Private"
+  IF RadioButton3.Value = TRUE THEN Global.TempString = "System"
+
+  ME.Close
+END
+
+PUBLIC SUB Button2_Click()
+  ME.Close
+END
+
+PUBLIC SUB RadioButton1_Click()
+  RadioButton2.Value = FALSE
+  RadioButton3.Value = FALSE
+END
+
+PUBLIC SUB RadioButton2_Click()
+  RadioButton1.Value = FALSE
+  RadioButton3.Value = FALSE
+END
+
+PUBLIC SUB RadioButton3_Click()
+  RadioButton1.Value = FALSE
+  RadioButton2.Value = FALSE
+END

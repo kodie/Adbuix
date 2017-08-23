@@ -1,0 +1,54 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,64,43)
+  Text = ("Adbuix Shell")
+  Icon = Picture["application_xp_terminal.png"]
+  { Menu1 Menu
+    Text = ("Send To...")
+    { Menu3 Menu
+      Text = ("ADB")
+      Toggle = True
+    }
+    { Menu9 Menu
+      Text = ("ADB Shell")
+    }
+    { Menu4 Menu
+      Text = ("Fastboot")
+      Toggle = True
+    }
+    { Menu5 Menu
+      Text = ("Terminal")
+      Toggle = True
+    }
+    { Menu8 Menu
+      Text = ("Adbuix")
+    }
+    { Menu10 Menu
+      Text = ("Custom...")
+    }
+  }
+  { Menu2 Menu
+    Text = ("Commands")
+    { Menu6 Menu
+      Text = ("ADB")
+      { Menu7 Menu
+        Text = ("Kill Server")
+      }
+    }
+  }
+  { TextArea1 TextArea
+    MoveScaled(1,1,62,34)
+    Text = ("TextArea1")
+    Wrap = True
+    ScrollBar = Scroll.Vertical
+  }
+  { TextBox1 TextBox
+    MoveScaled(1,36,52,3)
+    Text = ("TextBox1")
+  }
+  { Button1 Button
+    MoveScaled(54,36,9,3)
+    Text = ("Send")
+  }
+}

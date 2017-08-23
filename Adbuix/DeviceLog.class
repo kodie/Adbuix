@@ -1,0 +1,52 @@
+' Gambas class file
+
+PRIVATE $shellProcess AS Process
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+  LoadDeviceLog()
+END
+
+PUBLIC SUB Process_Read()
+  DIM sLine AS String
+  READ #LAST, sLine, -256
+  TextArea1.Insert(sLine)
+END
+
+PUBLIC SUB Process_Error(errorMsg AS String)
+  TextArea1.Insert(errorMsg)
+END
+
+PRIVATE FUNCTION LoadDeviceLog()
+  TextArea1.Clear()
+  $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " logcat" FOR READ
+END
+
+PUBLIC SUB Button4_Click()
+  LoadDeviceLog()
+END
+
+PUBLIC SUB Button3_Click()
+  ME.Close
+END
+
+PUBLIC SUB Button1_Click()
+  Dialog.Path = User.Home &/ "Desktop"
+  'Dialog.Filter = ["*.txt", "Text File File"]
+  IF Dialog.SaveFile() THEN RETURN
+  File.Save(Dialog.Path, TextArea1.Text)
+  CATCH
+    Message.Error(Error.Text)
+END

@@ -1,0 +1,14 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,48,17)
+  Text = ("")
+  Border = Window.None
+  SkipTaskbar = True
+  { Label1 Label
+    MoveScaled(9,4,30,8)
+    Font = Font["Bold,+5"]
+    Text = ("Loading Adbuix.\nPlease Wait.")
+    Alignment = Align.Center
+  }
+}

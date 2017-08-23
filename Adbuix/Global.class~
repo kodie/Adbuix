@@ -1,0 +1,7 @@
+' Gambas class file
+STATIC PUBLIC Settings AS NEW Settings("usr/share/adbuix/settings.conf", "Adbuix Configuration File")
+STATIC PUBLIC AttachedDevices AS NEW String[10, 10]
+STATIC PUBLIC DeviceSN AS String
+STATIC PUBLIC TempString AS String
+STATIC PUBLIC ADBPath AS String
+STATIC PUBLIC LogFile AS File

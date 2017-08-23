@@ -1,0 +1,220 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,86,50)
+  Text = ("Adbuix File Manager")
+  Icon = Picture["server.png"]
+  Border = Window.Fixed
+  { Frame1 Frame
+    MoveScaled(46,1,39,48)
+    Text = ("Remote")
+    { RemoteBtnRefresh Button
+      MoveScaled(11,7,8,3)
+      ToolTip = ("Refresh")
+      Text = ("")
+      Picture = Picture["arrow_refresh.png"]
+    }
+    { RemoteBtnUp Button
+      MoveScaled(2,7,8,3)
+      ToolTip = ("Go up a folder.")
+      Text = ("")
+      Picture = Picture["arrow_up.png"]
+    }
+    { RemoteBtnHome Button
+      MoveScaled(20,7,8,3)
+      ToolTip = ("Go to default folder.")
+      Text = ("")
+      Picture = Picture["house.png"]
+    }
+    { RemoteList ListView
+      MoveScaled(2,11,35,28)
+    }
+    { RemotePath TextBox
+      MoveScaled(2,3,27,3)
+      Text = ("RemotePath")
+    }
+    { RemoteBtnGo Button
+      MoveScaled(34,3,3,3)
+      ToolTip = ("Go!")
+      Text = ("")
+      Picture = Picture["bullet_go.png"]
+    }
+    { RemoteBtnRename Button
+      MoveScaled(2,40,11,3)
+      ToolTip = ("Rename a file or folder.")
+      Text = ("")
+      Picture = Picture["textfield_rename.png"]
+    }
+    { RemoteBtnDeleteFile Button
+      MoveScaled(26,40,11,3)
+      ToolTip = ("Delete a file or an empty folder.")
+      Text = ("")
+      Picture = Picture["page_delete.png"]
+    }
+    { RemoteBtnNewFolder Button
+      MoveScaled(29,7,8,3)
+      ToolTip = ("Create a new folder.")
+      Text = ("")
+      Picture = Picture["folder_add.png"]
+    }
+    { RemoteBtnSetHome Button
+      MoveScaled(30,3,3,3)
+      ToolTip = ("Make current path the default path.")
+      Text = ("")
+      Picture = Picture["house_link.png"]
+    }
+    { RemoteBtnDeleteFolder Button
+      MoveScaled(14,40,11,3)
+      ToolTip = ("Delete a folder with files in it.")
+      Text = ("")
+      Picture = Picture["folder_delete.png"]
+    }
+    { RemoteBtnCopy ToggleButton
+      MoveScaled(2,44,17,3)
+      ToolTip = ("Copy a file.")
+      Text = ("")
+      Picture = Picture["page_copy.png"]
+    }
+    { RemoteBtnProperties Button
+      MoveScaled(27,43,11,3)
+      Visible = False
+      Enabled = False
+      ToolTip = ("File Properties.")
+      Text = ("")
+      Picture = Picture["page_gear.png"]
+    }
+    { RemoteBtnMove ToggleButton
+      MoveScaled(21,44,16,3)
+      ToolTip = ("Move a file.")
+      Text = ("")
+      Picture = Picture["page_go.png"]
+    }
+  }
+  { BtnPull Button
+    MoveScaled(41,18,4,6)
+    ToolTip = ("Copy file from Remote to Local.")
+    Text = ("")
+    Picture = Picture["arrow_turn_left.png"]
+  }
+  { BtnPush Button
+    MoveScaled(41,25,4,6)
+    ToolTip = ("Copy file from Local to Remote.")
+    Text = ("")
+    Picture = Picture["arrow_turn_right.png"]
+  }
+  { Frame2 Frame
+    MoveScaled(1,1,39,48)
+    Text = ("Local")
+    { LocalList ListView
+      MoveScaled(2,11,35,28)
+    }
+    { LocalPath TextBox
+      MoveScaled(2,3,27,3)
+      Text = ("LocalPath")
+    }
+    { LocalBtnGo Button
+      MoveScaled(34,3,3,3)
+      ToolTip = ("Go!")
+      Text = ("")
+      Picture = Picture["bullet_go.png"]
+    }
+    { LocalBtnRename Button
+      MoveScaled(2,40,11,3)
+      ToolTip = ("Rename a file or folder.")
+      Text = ("")
+      Picture = Picture["textfield_rename.png"]
+    }
+    { LocalBtnDeleteFile Button
+      MoveScaled(26,40,11,3)
+      ToolTip = ("Delete a file or an empty folder.")
+      Text = ("")
+      Picture = Picture["page_delete.png"]
+    }
+    { LocalBtnNewFolder Button
+      MoveScaled(29,7,8,3)
+      ToolTip = ("Create a new folder.")
+      Text = ("")
+      Picture = Picture["folder_add.png"]
+    }
+    { LocalBtnProperties Button
+      MoveScaled(27,43,11,3)
+      Visible = False
+      Enabled = False
+      ToolTip = ("File Properties.")
+      Text = ("")
+      Picture = Picture["page_gear.png"]
+    }
+    { LocalBtnUp Button
+      MoveScaled(2,7,8,3)
+      ToolTip = ("Go up a folder.")
+      Text = ("")
+      Picture = Picture["arrow_up.png"]
+    }
+    { LocalBtnRefresh Button
+      MoveScaled(11,7,8,3)
+      ToolTip = ("Refresh")
+      Text = ("")
+      Picture = Picture["arrow_refresh.png"]
+    }
+    { LocalBtnHome Button
+      MoveScaled(20,7,8,3)
+      ToolTip = ("Go to default folder.")
+      Text = ("")
+      Picture = Picture["house.png"]
+    }
+    { LocalBtnSetHome Button
+      MoveScaled(30,3,3,3)
+      ToolTip = ("Make current path the default path.")
+      Text = ("")
+      Picture = Picture["house_link.png"]
+    }
+    { LocalBtnDeleteFolder Button
+      MoveScaled(14,40,11,3)
+      ToolTip = ("Delete a folder with files in it.")
+      Text = ("")
+      Picture = Picture["folder_delete.png"]
+    }
+    { LocalBtnCopy ToggleButton
+      MoveScaled(2,44,16,3)
+      ToolTip = ("Copy a file.")
+      Text = ("")
+      Picture = Picture["page_copy.png"]
+    }
+    { LocalBtnMove ToggleButton
+      MoveScaled(20,44,17,3)
+      ToolTip = ("Move a file.")
+      Text = ("")
+      Picture = Picture["page_go.png"]
+    }
+  }
+  { LocalCurPath Label
+    MoveScaled(41,4,4,2)
+    Visible = False
+    Text = ("LocalCurPath")
+  }
+  { RemoteCurPath Label
+    MoveScaled(41,7,4,2)
+    Visible = False
+    Text = ("RemoteCurPath")
+  }
+  { StatusTxt Label
+    MoveScaled(3,50,82,2)
+    Visible = False
+    Text = ("Ready.")
+  }
+  { StatusImg PictureBox
+    MoveScaled(1,50,2.1429,2.1429)
+    Visible = False
+  }
+  { LocalBtnSudo ToggleButton
+    MoveScaled(41,42,4,4)
+    ToolTip = ("Use admin privileges. (gksudo)")
+    Text = ("")
+    Picture = Picture["key.png"]
+  }
+  { Button1 Button
+    MoveScaled(41,32,4,5)
+    Visible = False
+    Text = ("Button1")
+  }
+}

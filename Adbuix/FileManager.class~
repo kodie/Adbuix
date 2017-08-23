@@ -1,0 +1,648 @@
+' Gambas class file
+PRIVATE $shellProcess AS Process
+PRIVATE $shellText AS String
+PRIVATE $nameMode AS Integer
+PRIVATE $oldFile AS String
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+'When file manager is opened...
+  'Center on screen.
+  ME.Center
+
+  'Load the lists.
+  Refresh_Remote(Global.Settings["FileManager/DefaultRemote", "/"])
+  Refresh_Local(Global.Settings["FileManager/DefaultLocal", "/"])
+
+  'Set status message.
+  StatusTxt.Text = "Ready."
+  StatusImg.Picture = Picture.Load("accept.png")
+
+END
+
+PUBLIC SUB Process_Read()
+  DIM sLine AS String
+  'When a shell command is ran, take the output and put it in a string.
+  READ #LAST, sLine, -256
+  $shellText = $shellText & sLine
+
+  IF Global.Settings("AppLogs/LogTR", 0) = -1 THEN GlobalFunc.WriteLog(sLine, "TR")
+END
+
+PUBLIC SUB Process_Error(errorMsg AS String)
+  'If process error occurs...
+  'Display error message with ok and cancel buttons.
+  GlobalFunc.WriteLog(errorMsg, "E")
+  SELECT Message.Error(errorMsg, "Ok", "Cancel")
+  CASE 1
+    'If user clicks "ok", refresh the lists.
+    Refresh_Remote(Global.Settings["FileManager/DefaultRemote", "/"])
+    Refresh_Local(Global.Settings["FileManager/DefaultLocal", "/"])
+  CASE 2
+    'If user clicks "cancel", close the file manager.
+    FileManager.Close
+  END SELECT
+END
+
+PRIVATE SUB New_Refresh_Local(TheDir AS String)
+  DIM splitShell AS String[]
+  DIM splitLine AS String[]
+  DIM PicFolder AS Picture
+  DIM PicFile AS Picture
+  DIM PicCur AS Picture
+  DIM i AS Integer
+  DIM doSudo AS String
+
+  'Load icons.
+  PicFolder = Picture.Load("folder.png")
+  PicFile = Picture.Load("page_white.png")
+
+  'Clear the list
+  LocalList.Clear
+
+  'Set the path text field and the current path.
+  LocalPath.Text = TheDir
+  LocalCurPath.Text = TheDir
+
+  IF LocalBtnSudo.Value = TRUE THEN 
+    $shellProcess = SHELL "gksudo \"ls \'" & TheDir & "\' -l\" -m \"Your password is required for Adbuix to run that command.\"" WAIT FOR READ
+  ELSE
+    $shellProcess = SHELL "ls \"" & TheDir & "\" -l" WAIT FOR READ
+  ENDIF
+
+  'Split the shell output into an array.
+  splitShell = Split($shellText, "\n", "", TRUE)
+PRINT splitShell[2]
+  IF splitShell.Count > 0 THEN 
+    FOR i = 0 TO splitShell.Count - 1
+      splitLine = Split(splitShell[i], "\t", "", TRUE)
+      ' IF InStr(splitLine[0], "d") THEN
+        ' PicCur = PicFolder
+      ' ELSE 
+        PicCur = PicFile
+      ' ENDIF 
+      LocalList.Add(i, Trim(splitLine[0]), PicCur)
+      ' PRINT splitLine[5]
+    NEXT
+
+     'Select the first item on the list.
+    LocalList.MoveFirst
+    LocalList.Item.Selected = TRUE
+  ELSE 
+    'Catch any errors.
+    CATCH 
+  ENDIF
+
+  'Clear the array and close the process.
+  $shellText = NULL
+  $shellProcess.Close
+END
+
+
+PRIVATE SUB Refresh_Local(TheDir AS String)
+  DIM splitShell AS String[]
+  DIM PicFolder AS Picture
+  DIM PicFile AS Picture
+  DIM PicCur AS Picture
+  DIM i AS Integer
+  DIM doSudo AS String
+
+  'Load icons.
+  PicFolder = Picture.Load("folder.png")
+  PicFile = Picture.Load("page_white.png")
+  
+  'Clear the list
+  LocalList.Clear
+  
+  'Set the path text field and the current path.
+  LocalPath.Text = TheDir
+  LocalCurPath.Text = TheDir
+
+  'Run the shell command.
+  IF LocalBtnSudo.Value = TRUE THEN 
+    $shellProcess = SHELL "gksudo \"ls \'" & TheDir & "\' -p1\" -m \"Your password is required for Adbuix to run that command.\" | sort" WAIT FOR READ
+  ELSE
+    $shellProcess = SHELL "ls \"" & TheDir & "\" -p1 | sort" WAIT FOR READ
+  ENDIF
+
+  'Split the shell output into an array.
+  splitShell = Split($shellText, "\n", "", TRUE)
+
+  'Loop through files only if any were found.
+  IF splitShell.Count > 0 THEN 
+    FOR i = 0 TO splitShell.Count - 1
+      'If the item has a slash at the end, then its a folder...
+      IF InStr(splitShell[i], "/") THEN 
+        'So give it a folder icon and remove the slash.
+        PicCur = PicFolder 
+        splitShell[i] = Replace(splitShell[i], "/", "")
+      ELSE 
+        'Or else the item is a file and not a folder, so give it a file icon.
+        PicCur = PicFile
+      ENDIF
+      'Add the item to the list.
+      LocalList.Add(i, Trim(splitShell[i]), PicCur)
+      NEXT
+
+    'Select the first item on the list.
+    LocalList.MoveFirst
+    LocalList.Item.Selected = TRUE
+  ELSE 
+    'Catch any errors.
+    CATCH 
+  ENDIF
+
+  'Clear the array and close the process.
+  $shellText = NULL
+  $shellProcess.Close
+END
+
+PRIVATE SUB Refresh_Remote(TheDir AS String)
+  DIM splitShell AS String[]
+  DIM PicFolder AS Picture
+  DIM PicFile AS Picture
+  DIM PicCur AS Picture
+  DIM i AS Integer
+  DIM sortString AS String
+  
+  'Load icons.
+  PicFolder = Picture.Load("folder.png")
+  PicFile = Picture.Load("page_white.png")
+  
+  'Clear the list.
+  RemoteList.Clear
+  
+  'Set the path text field and the current path.
+  RemotePath.Text = TheDir
+  RemoteCurPath.Text = TheDir
+  
+  'Run the shell command.
+  sortString = " -p1"
+  IF InStr(Global.DeviceSN, "emulator") THEN sortString = ""
+  $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " shell ls \"" & TheDir & "\"" & sortString & " | sort" WAIT FOR READ
+  
+  'Split the shell output into an array.
+  splitShell = Split($shellText, "\n", "", TRUE)
+  
+  'If there is only one item, see if it was an error.
+  IF splitShell.Count = 1 THEN 
+    'If it was an error...
+    IF InStr(splitShell[0], "ls: " & TheDir & ":") THEN 
+        'Then clear the array, close the process, and trigger the error.
+        $shellText = NULL
+        $shellProcess.Close
+        ' Process_Error(splitShell[0])
+    ENDIF 
+  ENDIF
+  
+  'Loop through files only if any were found.
+  IF splitShell.Count > 0 THEN 
+    FOR i = 0 TO splitShell.Count - 1
+      'If the item has a slash at the end, then its a folder...
+      IF InStr(splitShell[i], "/") THEN 
+        'So give it a folder icon and remove the slash.
+        PicCur = PicFolder
+        splitShell[i] = Replace(splitShell[i], "/", "")
+      ELSE 
+      'Or else the item is a file and not a folder, so give it a file icon.
+      PicCur = PicFile
+    ENDIF
+    'Add the item to the list.
+    RemoteList.Add(i, Trim(splitShell[i]), PicCur)
+    NEXT
+    
+    'Select the first item on the list.
+    RemoteList.MoveFirst
+    RemoteList.Item.Selected = TRUE
+      
+  ELSE 
+    'Catch any errors.
+    CATCH 
+  ENDIF
+
+  'Clear the array and close the process.
+  $shellText = NULL
+  $shellProcess.Close
+END
+
+
+PUBLIC SUB LocalList_DblClick()
+  'When an item is double clicked on...
+  'Move the cursor to the item clicked...
+  LocalList.MoveCurrent
+  'And refresh the list with the items in the clicked folder.
+  Refresh_Local(LocalCurPath.Text &/ LocalList.Item.Text & "/")
+END
+
+PUBLIC SUB RemoteList_DblClick()
+  'When an item is double clicked on...
+  'Move the cursor to the item clicked...
+  RemoteList.MoveCurrent
+  'And refresh the list with the items in the clicked folder.
+  Refresh_Remote(RemoteCurPath.Text &/ RemoteList.Item.Text & "/")
+END
+
+
+PUBLIC SUB LocalBtnGo_Click()
+  'If go button is clicked, load list with contents of typed folder.
+  Refresh_Local(LocalPath.Text)
+END
+
+PUBLIC SUB RemoteBtnGo_Click()
+  'If go button is clicked, load list with contents of typed folder.
+  Refresh_Remote(RemotePath.Text)
+END
+
+
+PUBLIC SUB LocalBtnUp_Click()
+  DIM newPath AS String
+  DIM lastSlash AS String
+  
+  IF LocalCurPath.Text = "/" THEN 
+    newPath = "/"
+  ELSE
+    lastSlash = RInStr(LocalCurPath.Text, "/", -1)
+    newPath = Mid(LocalCurPath.Text, 1, lastSlash)
+  ENDIF
+  Refresh_Local(newPath)
+END
+
+PUBLIC SUB RemoteBtnUp_Click()
+  DIM newPath AS String
+  DIM lastSlash AS String
+  
+  IF RemoteCurPath.Text = "/" THEN 
+    newPath = "/"
+  ELSE
+    lastSlash = RInStr(RemoteCurPath.Text, "/", -1)
+    newPath = Mid(RemoteCurPath.Text, 1, lastSlash)
+  ENDIF
+  Refresh_Remote(newPath)
+END
+
+
+PUBLIC SUB LocalBtnRefresh_Click()
+  Refresh_Local(LocalCurPath.Text)
+END
+
+PUBLIC SUB RemoteBtnRefresh_Click()
+  Refresh_Remote(RemoteCurPath.Text)
+END
+
+
+PUBLIC SUB LocalBtnHome_Click()
+  Refresh_Local(Global.Settings["FileManager/DefaultLocal", "/"])
+END
+
+PUBLIC SUB RemoteBtnHome_Click()
+  Refresh_Remote(Global.Settings["FileManager/DefaultRemote", "/"])
+END
+
+PUBLIC SUB LocalBtnNewFolder_Click()
+  DIM picFolder AS Picture
+
+  $nameMode = 1
+  picFolder = Picture.Load("folder.png")
+  
+  LocalList.MoveTo(LocalList.Count)
+  LocalList.Add(LocalList.Count, "New Folder", picFolder)
+  LocalList.Item.Editable = TRUE
+  LocalList.Item.Rename()
+END
+
+PUBLIC SUB LocalBtnRename_Click()
+  $nameMode = 2
+  
+  LocalList.MoveCurrent
+  $oldFile = LocalList.Item.Text
+  LocalList.Item.Editable = TRUE
+  LocalList.Item.Rename()
+END
+
+PUBLIC SUB LocalList_Rename()
+  'Creating a folder.
+  IF $nameMode = 1 THEN 
+    LocalList.Item.Editable = FALSE
+    IF LocalBtnSudo.Value = TRUE THEN 
+      $shellProcess = SHELL "gksudo \"mkdir \'" &/ LocalCurPath.Text &/ LocalList.Item.Text & "\'\"" WAIT FOR READ
+    ELSE
+      $shellProcess = SHELL "mkdir \"" &/ LocalCurPath.Text &/ LocalList.Item.Text & "\"" WAIT FOR READ
+    ENDIF
+    Refresh_Local(LocalCurPath.Text)
+    $nameMode = 0
+  ENDIF
+
+  'Renaming a file or folder.
+  IF $nameMode = 2 THEN 
+    LocalList.Item.Editable = FALSE
+    IF LocalBtnSudo.Value = TRUE THEN 
+      $shellProcess = SHELL "gksudo \"mv \'" &/ LocalCurPath.Text &/ $oldFile & "\' \'" &/ LocalCurPath.Text &/ LocalList.Item.Text & "\'\" -m \"Your password is required for Adbuix to run that command.\"" WAIT FOR READ
+    ELSE
+      $shellProcess = SHELL "mv \"" &/ LocalCurPath.Text &/ $oldFile & "\" \"" &/ LocalCurPath.Text &/ LocalList.Item.Text & "\"" WAIT FOR READ
+    ENDIF
+    Refresh_Local(LocalCurPath.Text)
+    $oldFile = NULL
+    $nameMode = 0
+  ENDIF
+
+  'Clear array, close process.
+  $shellText = NULL
+  $shellProcess.Close
+  
+  'Catch any errors.
+  CATCH
+END
+
+
+PUBLIC SUB RemoteBtnNewFolder_Click()
+  DIM picFolder AS Picture
+
+  $nameMode = 1
+  picFolder = Picture.Load("folder.png")
+  
+  RemoteList.MoveTo(RemoteList.Count)
+  RemoteList.Add(RemoteList.Count, "New Folder", picFolder)
+  RemoteList.Item.Editable = TRUE
+  RemoteList.Item.Rename()
+END
+
+PUBLIC SUB RemoteBtnRename_Click()
+  $nameMode = 2
+  
+  RemoteList.MoveCurrent
+  $oldFile = RemoteList.Item.Text
+  RemoteList.Item.Editable = TRUE
+  RemoteList.Item.Rename()
+END
+
+PUBLIC SUB RemoteList_Rename()
+  DIM errMsg AS String
+
+  'Creating a folder.
+  IF $nameMode = 1 THEN 
+    RemoteList.Editable = FALSE
+    $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " shell mkdir \"" &/ RemoteCurPath.Text &/ RemoteList.Item.Text & "\"" WAIT FOR READ
+
+      IF $shellText = NULL THEN 
+        Refresh_Remote(RemoteCurPath.Text)
+      ELSE
+        'Then clear the array, close the process, and trigger the error.
+        errMsg = $shellText
+        $shellText = NULL
+        $shellProcess.Close
+        Process_Error(errMsg)
+      ENDIF
+      
+    $nameMode = 0
+  ENDIF
+  
+  
+  'Renaming a file or folder.
+  IF $nameMode = 2 THEN 
+    RemoteList.Item.Editable = FALSE
+      $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " shell mv \"" &/ RemoteCurPath.Text &/ $oldFile & "\" \"" &/ RemoteCurPath.Text &/ RemoteList.Item.Text & "\"" WAIT FOR READ
+
+      IF $shellText = NULL THEN 
+        Refresh_Remote(RemoteCurPath.Text)
+      ELSE
+        'Then clear the array, close the process, and trigger the error.
+        errMsg = $shellText
+        $shellText = NULL
+        $shellProcess.Close
+        Process_Error(errMsg)
+      ENDIF
+
+    $oldFile = NULL
+    $nameMode = 0
+  ENDIF
+  
+  'Clear array, close process.
+  $shellText = NULL
+  $shellProcess.Close
+  
+  'Catch any errors.
+  CATCH
+END
+
+PUBLIC SUB LocalBtnSetHome_Click()
+  Global.Settings["FileManager/DefaultLocal"] = LocalPath.Text
+END
+
+PUBLIC SUB RemoteBtnSetHome_Click()
+  Global.Settings["FileManager/DefaultRemote"] = RemotePath.Text
+END
+
+PUBLIC SUB LocalBtnDeleteFolder_Click()
+  LocalList.MoveCurrent()
+  SELECT Message.Question("Are you sure that you want to delete \"" & LocalList.Item.Text & "\"?", "Yes", "No")
+  CASE 1
+    IF LocalBtnSudo.Value = TRUE THEN 
+      $shellProcess = SHELL "gksudo \"rmdir \'" &/ LocalCurPath.Text &/ LocalList.Item.Text & "\'\" -m \"Your password is required for Adbuix to run that command.\"" WAIT FOR READ
+    ELSE
+      $shellProcess = SHELL "rmdir \"" &/ LocalCurPath.Text &/ LocalList.Item.Text & "\"" WAIT FOR READ
+    ENDIF
+    Refresh_Local(LocalCurPath.Text)
+  CASE 2
+    'Do nothing.
+  END SELECT
+  $shellProcess.Close
+END
+
+PUBLIC SUB RemoteBtnDeleteFolder_Click()
+  DIM errMsg AS String
+  RemoteList.MoveCurrent()
+  SELECT Message.Question("Are you sure that you want to delete \"" & RemoteList.Item.Text & "\"?", "Yes", "No")
+  CASE 1
+    $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " shell rmdir \"" &/ RemoteCurPath.Text &/ RemoteList.Item.Text & "\"" WAIT FOR READ
+    IF $shellText = NULL THEN 
+        Refresh_Remote(RemoteCurPath.Text)
+      ELSE
+        'Then clear the array, close the process, and trigger the error.
+        errMsg = $shellText
+        $shellText = NULL
+        $shellProcess.Close
+        Process_Error(errMsg)
+      ENDIF
+  CASE 2
+    'Do nothing.
+  END SELECT
+  $shellProcess.Close
+END
+
+PUBLIC SUB LocalBtnDeleteFile_Click()
+  LocalList.MoveCurrent()
+  SELECT Message.Question("Are you sure that you want to delete \"" & LocalList.Item.Text & "\"?", "Yes", "No")
+  CASE 1
+    IF LocalBtnSudo.Value = TRUE THEN 
+      $shellProcess = SHELL "gksudo \"rm \'" &/ LocalCurPath.Text &/ LocalList.Item.Text & "\'\" -m \"Your password is required for Adbuix to run that command.\"" WAIT FOR READ
+    ELSE
+      $shellProcess = SHELL "rm \"" &/ LocalCurPath.Text &/ LocalList.Item.Text & "\"" WAIT FOR READ
+    ENDIF
+    Refresh_Local(LocalCurPath.Text)
+  CASE 2
+    'Do nothing.
+  END SELECT
+  $shellProcess.Close
+END
+
+PUBLIC SUB RemoteBtnDeleteFile_Click()
+  DIM errMsg AS String
+  RemoteList.MoveCurrent()
+  SELECT Message.Question("Are you sure that you want to delete \"" & RemoteList.Item.Text & "\"?", "Yes", "No")
+  CASE 1
+    $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " shell rm \"" &/ RemoteCurPath.Text &/ RemoteList.Item.Text & "\"" WAIT FOR READ
+    IF $shellText = NULL THEN 
+        Refresh_Remote(RemoteCurPath.Text)
+      ELSE
+        'Then clear the array, close the process, and trigger the error.
+        errMsg = $shellText
+        $shellText = NULL
+        $shellProcess.Close
+        Process_Error(errMsg)
+      ENDIF
+  CASE 2
+    'Do nothing.
+  END SELECT
+  $shellProcess.Close
+END
+
+PUBLIC SUB LocalBtnCopy_Click()
+  DIM lastSlash AS Integer
+  DIM fileName AS String
+
+  IF LocalBtnCopy.Value = TRUE THEN 
+    LocalList.MoveCurrent()
+    $oldFile = LocalPath.Text &/ LocalList.Item.Text
+  ELSE 
+    lastSlash = RInStr($oldFile, "/", 0) + 1
+    fileName = Mid($oldFile, lastSlash, Len($oldFile))
+    IF LocalBtnSudo.Value = TRUE THEN 
+      $shellProcess = SHELL "gksudo \"cp \'" &/ $oldFile & "\' \'" &/ LocalCurPath.Text &/ fileName & "\'\" -m \"Your password is required for Adbuix to run that command.\"" WAIT FOR READ
+    ELSE
+      $shellProcess = SHELL "cp \"" &/ $oldFile & "\" \"" &/ LocalCurPath.Text &/ fileName & "\"" WAIT FOR READ
+    ENDIF
+    Refresh_Local(LocalCurPath.Text)
+    $oldFile = NULL
+    $nameMode = 0
+    $oldFile = NULL
+  ENDIF
+END
+
+PUBLIC SUB RemoteBtnCopy_Click()
+  DIM lastSlash AS Integer
+  DIM fileName AS String
+  DIM errMsg AS String
+
+  IF RemoteBtnCopy.Value = TRUE THEN 
+    RemoteList.MoveCurrent()
+    $oldFile = RemotePath.Text &/ RemoteList.Item.Text
+  ELSE 
+    lastSlash = RInStr($oldFile, "/", 0) + 1
+    fileName = Mid($oldFile, lastSlash, Len($oldFile))
+    $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " shell cp \"" &/ $oldFile & "\" \"" &/ RemoteCurPath.Text &/ fileName & "\"" WAIT FOR READ
+    IF $shellText = NULL THEN 
+      Refresh_Remote(RemoteCurPath.Text)
+    ELSE
+      'Then clear the array, close the process, and trigger the error.
+      errMsg = $shellText
+      $shellText = NULL
+      $shellProcess.Close
+      Process_Error(errMsg)
+    ENDIF
+    Refresh_Remote(RemoteCurPath.Text)
+    $oldFile = NULL
+    $nameMode = 0
+    $oldFile = NULL
+  ENDIF
+END
+
+PUBLIC SUB LocalBtnMove_Click()
+  DIM lastSlash AS Integer
+  DIM fileName AS String
+  
+  IF LocalBtnMove.Value = TRUE THEN 
+    LocalList.MoveCurrent()
+    $oldFile = LocalPath.Text &/ LocalList.Item.Text
+  ELSE 
+    lastSlash = RInStr($oldFile, "/", 0) + 1
+    fileName = Mid($oldFile, lastSlash, Len($oldFile))
+    IF LocalBtnSudo.Value = TRUE THEN 
+      $shellProcess = SHELL "gksudo \"mv \'" &/ $oldFile & "\' \'" &/ LocalCurPath.Text &/ fileName & "\'\" -m \"Your password is required for Adbuix to run that command.\"" WAIT FOR READ
+    ELSE
+      $shellProcess = SHELL "mv \"" &/ $oldFile & "\" \"" &/ LocalCurPath.Text &/ fileName & "\"" WAIT FOR READ
+    ENDIF
+    Refresh_Local(LocalCurPath.Text)
+    $oldFile = NULL
+    $nameMode = 0
+  ENDIF
+END
+
+PUBLIC SUB RemoteBtnMove_Click()
+  DIM lastSlash AS Integer
+  DIM fileName AS String
+  DIM errMsg AS String
+  
+  IF RemoteBtnMove.Value = TRUE THEN 
+    RemoteList.MoveCurrent()
+    $oldFile = RemotePath.Text &/ RemoteList.Item.Text
+  ELSE 
+    lastSlash = RInStr($oldFile, "/", 0) + 1
+    fileName = Mid($oldFile, lastSlash, Len($oldFile))
+    $shellProcess = SHELL Global.ADBPath & " -s " & Global.DeviceSN & " shell mv \"" &/ $oldFile & "\" \"" &/ RemoteCurPath.Text &/ fileName & "\"" WAIT FOR READ
+    IF $shellText = NULL THEN 
+      Refresh_Remote(RemoteCurPath.Text)
+    ELSE
+      'Then clear the array, close the process, and trigger the error.
+      errMsg = $shellText
+      $shellText = NULL
+      $shellProcess.Close
+      Process_Error(errMsg)
+    ENDIF
+    Refresh_Remote(RemoteCurPath.Text)
+    $oldFile = NULL
+    $nameMode = 0
+  ENDIF
+END
+
+PUBLIC SUB BtnPull_Click()
+  DIM fileForm AS FilePushPull
+  DIM lastSlash AS Integer
+  DIM fileName AS String
+
+  RemoteList.MoveCurrent()
+  lastSlash = RInStr(RemoteList.Item.Text, "/", 0) + 1
+  fileName = Mid(RemoteList.Item.Text, lastSlash, Len(RemoteList.Item.Text))
+  fileForm = NEW FilePushPull(0, RemoteCurPath.Text &/ RemoteList.Item.Text, LocalCurPath.Text &/ fileName)
+  fileForm.ShowModal()
+  Refresh_Local(LocalCurPath.Text)
+END
+
+PUBLIC SUB BtnPush_Click()
+  DIM fileForm AS FilePushPull
+  DIM lastSlash AS Integer
+  DIM fileName AS String
+
+  LocalList.MoveCurrent()
+  lastSlash = RInStr(LocalList.Item.Text, "/", 0) + 1
+  fileName = Mid(LocalList.Item.Text, lastSlash, Len(LocalList.Item.Text))
+  fileForm = NEW FilePushPull(1, LocalCurPath.Text &/ LocalList.Item.Text, RemoteCurPath.Text &/ fileName)
+  fileForm.ShowModal()
+  Refresh_Remote(RemoteCurPath.Text)
+END
+
+PUBLIC SUB Button1_Click()
+
+  New_Refresh_Local(LocalPath.Text)
+
+END

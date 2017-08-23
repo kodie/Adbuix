@@ -1,0 +1,62 @@
+' Gambas class file
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+  Main.Visible = FALSE
+  RefreshList()
+END
+
+PUBLIC SUB RefreshList()
+  DIM i AS Integer
+  DIM DeviceCount AS Integer
+
+  ColumnView1.Clear
+  ColumnView1.Columns.Count = 2
+  ColumnView1.Columns[0].Width = 160
+  ColumnView1.Columns[0].Text = "Serial Number"
+  ColumnView1.Columns[1].Text = "State"
+
+  DeviceCount = GlobalFunc.GetDevices()
+
+  FOR i = 1 TO DeviceCount
+    ColumnView1.Add((i - 1), Global.AttachedDevices[(i - 1), 0])
+    IF Global.AttachedDevices[(i - 1), 1] = "device" THEN
+      ColumnView1[(i - 1)][1] = "ready"
+    ELSE
+        ColumnView1[(i - 1)][1] = Global.AttachedDevices[(i - 1), 1]
+    ENDIF
+  NEXT
+
+  ColumnView1.MoveFirst()
+  ColumnView1.Item.Selected = TRUE
+END
+
+
+PUBLIC SUB Button1_Click()
+  ColumnView1.MoveCurrent()
+  Global.DeviceSN = ColumnView1.Item.Text
+  Main.Visible = TRUE
+  ME.Close
+END
+
+PUBLIC SUB Button2_Click()
+  ME.Close
+END
+
+PUBLIC SUB Button4_Click()
+  GlobalFunc.ADBKill()
+  GlobalFunc.ADBStart()
+  RefreshList()
+END

@@ -1,0 +1,109 @@
+' Gambas class file
+
+PRIVATE $shellProcess AS Process
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+  TextArea1.ReadOnly = TRUE
+
+  TextArea1.Clear()
+  TextArea1.Insert("Adbuix Shell Console\n\n")
+  TextArea1.Insert("This is still under development so expect some bugs.\n\n")
+  TextArea1.Insert("Commands that require additional input will not let you do so.\n")
+  TextArea1.Insert("Also, commands that try to change text that has already been printed may act funny.\n\n")
+  TextArea1.Insert("Documention coming soon.\n\n")
+  TextArea1.Insert("Enjoy!\n")
+
+  TextBox1.Text = "Type commands here."
+  TextBox1.SetFocus()
+END
+
+PUBLIC SUB Process_Read()
+  DIM sLine AS String
+  READ #LAST, sLine, -256
+  TextArea1.Insert(sLine & "\n")
+  TextArea1.EnsureVisible()
+  TextBox1.SetFocus()
+END
+
+PUBLIC SUB Process_Error(errorMsg AS String)
+  TextArea1.Insert(errorMsg & "\n")
+  TextArea1.EnsureVisible()
+  TextBox1.SetFocus()
+END
+
+PRIVATE FUNCTION RunCmd()
+  DIM skipCmd AS Boolean
+
+  TextArea1.Insert("user@adbuix: " & TextBox1.Text & "\n")
+
+  IF TextBox1.Text = "clear" THEN 
+    skipCmd = TRUE
+    TextArea1.Clear
+  ENDIF
+
+  IF TextBox1.Text = "fuck you" THEN 
+    skipCmd = TRUE
+    TextArea1.Insert("No need for that here.")
+  ENDIF
+
+  IF skipCmd = TRUE THEN 
+    'Do Nothing
+  ELSE
+    $shellProcess = SHELL TextBox1.Text FOR READ
+  ENDIF 
+
+  TextBox1.Clear()
+END
+
+
+PUBLIC SUB Button1_Click()
+  IF TextBox1.Text = "Type commands here." THEN 
+    Message.Error("No commands entered.")
+  ELSE
+    RunCmd()
+  ENDIF
+END
+
+PUBLIC SUB TextBox1_KeyPress()
+  IF Key.Code = Key.Return THEN
+    RunCmd()
+  ENDIF
+END
+
+PUBLIC SUB TextBox1_GotFocus()
+  IF Trim(TextBox1.Text) = "Type commands here." THEN
+    TextBox1.Clear()
+  ENDIF
+END
+
+PUBLIC SUB TextBox1_LostFocus()
+  IF Trim(TextBox1.Text) = "" THEN
+    TextBox1.Text = "Type commands here."
+  ENDIF
+END
+
+PUBLIC SUB Form_Resize()
+  TextArea1.Width = ME.Width - 18
+  TextArea1.Height = ME.Height - 80
+
+  TextBox1.Top = TextArea1.Height + 20
+  TextBox1.Width = ME.Width - 110
+
+  Button1.Top = TextArea1.Height + 20
+  Button1.Left = TextBox1.Width + 20
+END
+
+

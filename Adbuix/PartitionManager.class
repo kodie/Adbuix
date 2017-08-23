@@ -1,0 +1,23 @@
+' Gambas class file
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+
+  ColumnView1.Columns.Count = 4
+  ColumnView1.Columns[0].Text = "Name"
+  ColumnView1.Columns[1].Text = "Type"
+  ColumnView1.Columns[2].Text = "% Total"
+  ColumnView1.Columns[3].Text = "Mb Total"
+END

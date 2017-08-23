@@ -1,0 +1,28 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,54,27)
+  Text = ("Adbuix Log Viewer")
+  Icon = Picture["script_code.png"]
+  Border = Window.Fixed
+  { FileView1 FileView
+    MoveScaled(1,1,52,20)
+    Mode = Select.Single
+    ShowDetailed = True
+  }
+  { Button1 Button
+    MoveScaled(1,22,17,4)
+    Text = ("View Log")
+    Picture = Picture["script_go.png"]
+  }
+  { Button2 Button
+    MoveScaled(19,22,17,4)
+    Text = ("Open Folder")
+    Picture = Picture["folder.png"]
+  }
+  { Button3 Button
+    MoveScaled(37,22,16,4)
+    Text = ("Exit")
+    Picture = Picture["cancel.png"]
+  }
+}

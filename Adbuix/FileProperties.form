@@ -1,0 +1,147 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,43,41)
+  Text = ("File Properties")
+  Icon = Picture["page_gear.png"]
+  Border = Window.Fixed
+  { TabStrip1 TabStrip
+    MoveScaled(1,2,41,34)
+    Count = 2
+    Index = 0
+    Text = ("General")
+    { Label1 Label
+      MoveScaled(1,3,7,3)
+      Text = ("Name:")
+    }
+    { TextBox1 TextBox
+      MoveScaled(12,3,26,3)
+      Text = ("TextBox1")
+    }
+    { Label2 Label
+      MoveScaled(1,8,7,3)
+      Text = ("Type:")
+    }
+    { Label3 Label
+      MoveScaled(12,8,37,3)
+      Text = ("GIF File")
+    }
+    { Label4 Label
+      MoveScaled(1,13,7,3)
+      Text = ("Size:")
+    }
+    { Label5 Label
+      MoveScaled(12,13,37,3)
+      Text = ("81.3 KB (83205 bytes)")
+    }
+    { Label6 Label
+      MoveScaled(1,19,10,3)
+      Text = ("Location:")
+    }
+    { TextBox2 TextBox
+      MoveScaled(12,19,26,3)
+      Text = ("TextBox2")
+    }
+    { Label9 Label
+      MoveScaled(1,24,10,3)
+      Text = ("Modified:")
+    }
+    { Label10 Label
+      MoveScaled(12,24,26,3)
+      Text = ("Mar  4 07:30")
+    }
+    Index = 1
+    Text = ("Permissions")
+    { Label11 Label
+      MoveScaled(13,2,6,3)
+      Text = ("Owner")
+      Alignment = Align.Center
+    }
+    { Label12 Label
+      MoveScaled(21,2,6,3)
+      Text = ("Group")
+      Alignment = Align.Center
+    }
+    { Label13 Label
+      MoveScaled(29,2,6,3)
+      Text = ("Public")
+      Alignment = Align.Center
+    }
+    { Label14 Label
+      MoveScaled(6,6,7,2)
+      Text = ("Read")
+      Alignment = Align.Right
+    }
+    { Label15 Label
+      MoveScaled(6,10,7,2)
+      Text = ("Write")
+      Alignment = Align.Right
+    }
+    { Label16 Label
+      MoveScaled(5,14,8,2)
+      Text = ("Execute")
+      Alignment = Align.Right
+    }
+    { Chk_OwnerRead CheckBox
+      MoveScaled(15,6,2,2)
+      Text = ("CheckBox1")
+    }
+    { Chk_GroupRead CheckBox
+      MoveScaled(23,6,2,2)
+      Text = ("CheckBox2")
+    }
+    { Chk_PublicRead CheckBox
+      MoveScaled(31,6,2,2)
+      Text = ("CheckBox3")
+    }
+    { Chk_OwnerWrite CheckBox
+      MoveScaled(15,10,2,2)
+      Text = ("CheckBox4")
+    }
+    { Chk_GroupWrite CheckBox
+      MoveScaled(23,10,2,2)
+      Text = ("CheckBox5")
+    }
+    { Chk_PublicWrite CheckBox
+      MoveScaled(31,10,2,2)
+      Text = ("CheckBox6")
+    }
+    { Chk_OwnerExecute CheckBox
+      MoveScaled(15,14,2,2)
+      Text = ("CheckBox7")
+    }
+    { Chk_GroupExecute CheckBox
+      MoveScaled(23,14,2,2)
+      Text = ("CheckBox8")
+    }
+    { Chk_PublicExecute CheckBox
+      MoveScaled(31,14,2,2)
+      Text = ("CheckBox9")
+    }
+    { Label17 Label
+      MoveScaled(1,18,13,3)
+      Text = ("Symbolic:")
+    }
+    { Label18 Label
+      MoveScaled(1,21,12,3)
+      Text = ("Octal:")
+    }
+    { Txt_Symbolic Label
+      MoveScaled(11,18,30,3)
+      Text = ("[Place Holder]")
+    }
+    { Txt_Octal Label
+      MoveScaled(11,21,30,3)
+      Text = ("[Place Holder]")
+    }
+    { Button2 Button
+      MoveScaled(21,25,18,3)
+      Text = ("Apply Permissions")
+    }
+    Index = 0
+  }
+  { Button1 Button
+    MoveScaled(30,37,12,3)
+    Text = ("Close")
+  }
+}

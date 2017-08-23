@@ -1,0 +1,33 @@
+' Gambas class file
+
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+  FileView1.Dir = Global.Settings["AppLogs/LogsPath", "/usr/share/adbuix/logs"]
+END
+
+PUBLIC SUB Button1_Click()
+IF FileView1.Selection.Count > 0 THEN
+  SHELL (Global.Settings["General/TextEditor", "gedit"] & " " & FileView1.Dir &/ FileView1.Selection[0])
+ENDIF
+END
+
+PUBLIC SUB Button2_Click()
+  SHELL (Global.Settings["General/FileManager", "nautilus"] & " " & FileView1.Dir)
+END
+
+PUBLIC SUB Button3_Click()
+  ME.Close
+END

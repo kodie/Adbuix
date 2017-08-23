@@ -1,0 +1,88 @@
+' Gambas class file
+
+PUBLIC SUB Form_Activate()
+  Main.Visible = FALSE
+END
+
+PUBLIC SUB Form_Open()
+  Global.ADBPath = Global.Settings["Dependencies/ADB", "/usr/share/adbuix/adb"]
+
+  ME.Center
+  Startup()
+END
+
+PUBLIC SUB Startup()
+  DIM DeviceCount AS Integer
+  DIM theDate AS String
+  DIM logDir AS String
+  DIM logFile AS String
+
+  theDate = Date(Now)
+  theDate = Replace(theDate, "/", "")
+
+  logDir = Global.Settings["AppLogs/LogsPath", "/usr/share/adbuix/logs"]
+  logFile = logDir &/ "adbuix" & theDate & ".log"
+
+  CREATELOG:
+  IF Exist(logDir) THEN
+    IF Exist(logFile) THEN 
+      Global.LogFile = OPEN logFile FOR WRITE APPEND
+    ELSE 
+      Global.LogFile = OPEN logFile FOR WRITE CREATE 
+      PRINT #Global.LogFile, "# Adbuix Log File"
+      Global.LogFile = OPEN logFile FOR WRITE APPEND
+      GlobalFunc.WriteLog("Log file created: " & Now)
+    ENDIF
+  ELSE 
+    MKDIR (logDir)
+    GOTO CREATELOG
+  ENDIF
+
+  GlobalFunc.WriteLog("Adbuix started.", "2")
+
+  IF GlobalFunc.ADBStart() = TRUE THEN
+    DeviceCount = GlobalFunc.GetDevices()
+    IF DeviceCount > 0 THEN 
+      IF Global.Settings["General/AlwaysShowDevices", 0] = -1 THEN 
+        GlobalFunc.WriteLog("AlowsShowDevices enabled.", "2")
+        Main.Visible = FALSE
+        SelectDevice.ShowModal()
+        IF Global.DeviceSN = NULL THEN 
+          Main.Close
+        ELSE 
+          GlobalFunc.RemountDevice(Global.DeviceSN)
+          Main.Show()
+          ME.Close
+        ENDIF
+      ELSE 
+        IF DeviceCount > 1 THEN 
+          GlobalFunc.WriteLog(DeviceCount & "devices found.", "2")
+          Main.Visible = FALSE
+          SelectDevice.ShowModal()
+          IF Global.DeviceSN = NULL THEN 
+            Main.Close
+          ELSE 
+            GlobalFunc.RemountDevice(Global.DeviceSN)
+            Main.Show()
+            ME.Close
+          ENDIF
+        ELSE 
+          GlobalFunc.WriteLog("Only 1 device found.", "2")
+          Global.DeviceSN = Global.AttachedDevices[0, 0]
+          GlobalFunc.RemountDevice(Global.DeviceSN)
+          Main.Show()
+          ME.Close
+        ENDIF 
+      ENDIF 
+    ELSE 
+        GlobalFunc.WriteLog("No Devices Found.", "2")
+      SELECT Message.Question("Please plug in your Android device.", "Ok", "Cancel")
+        CASE 1
+          Startup()
+        CASE 2
+          Main.Close
+      END SELECT
+    ENDIF
+  ENDIF
+END
+

@@ -1,0 +1,103 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,56,40)
+  Text = ("Adbuix Settings")
+  Icon = Picture["cog.png"]
+  Border = Window.Fixed
+  { TabStrip1 TabStrip
+    MoveScaled(1,2,54,33)
+    Count = 4
+    Index = 0
+    Text = ("Tab 0")
+    { Tab0Radio2 CheckBox
+      MoveScaled(2,1,41,3)
+      Text = ("Hide main window when opening others.")
+    }
+    { Tab0Radio5 CheckBox
+      MoveScaled(2,4,46,3)
+      Text = ("Show list of devices every time Adbuix is started.")
+    }
+    { Label5 Label
+      MoveScaled(2,9,23,3)
+      Text = ("File Manager:")
+    }
+    { Label6 Label
+      MoveScaled(28,9,18,3)
+      Text = ("Text Editor:")
+    }
+    { Tab0Txt1 ComboBox
+      MoveScaled(3,12,22,3)
+      Text = ("ComboBox1")
+    }
+    { Tab0Txt2 ComboBox
+      MoveScaled(29,12,22,3)
+      Text = ("ComboBox2")
+    }
+    Index = 1
+    Text = ("Tab 1")
+    { Label2 Label
+      MoveScaled(2,1,22,2)
+      Text = ("Default Local Path:")
+    }
+    { Tab1Txt1 TextBox
+      MoveScaled(3,4,32,3)
+      Text = ("TextBox1")
+    }
+    { Tab1Btn1 Button
+      MoveScaled(36,4,8,3)
+      Text = ("Browse")
+    }
+    { Label3 Label
+      MoveScaled(2,9,20,2)
+      Text = ("Default Remote Path:")
+    }
+    { Tab1Txt2 TextBox
+      MoveScaled(3,12,32,3)
+      Text = ("TextBox1")
+    }
+    { TextLabel1 TextLabel
+      MoveScaled(36,11,14,5)
+      Text = ("*Browse with file manager.")
+    }
+    Index = 2
+    Text = ("Tab 2")
+    { Tab2Radio0 CheckBox
+      MoveScaled(4,4,22,3)
+      Text = ("Hide file extenstions.")
+    }
+    { Tab2Radio1 CheckBox
+      MoveScaled(2,1,46,3)
+      Text = ("Only show .apk files.")
+    }
+    Index = 3
+    Text = ("Tab 3")
+    { Tab3Radio1 CheckBox
+      MoveScaled(2,1,38,3)
+      Text = ("Log all terminal responses. [TR]")
+    }
+    { Label4 Label
+      MoveScaled(2,5,30,3)
+      Text = ("Logs Folder:")
+    }
+    { Tab3Txt1 TextBox
+      MoveScaled(3,8,34,3)
+      Text = ("TextBox1")
+    }
+    { Tab3Btn1 Button
+      MoveScaled(38,8,9,3)
+      Text = ("Browse")
+    }
+    Index = 0
+  }
+  { BtnSave Button
+    MoveScaled(23,36,17,3)
+    Text = ("Save Changes")
+    Picture = Picture["accept.png"]
+  }
+  { BtnCancel Button
+    MoveScaled(41,36,14,3)
+    Text = ("Cancel")
+    Picture = Picture["cancel.png"]
+  }
+}

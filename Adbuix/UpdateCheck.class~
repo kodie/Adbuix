@@ -1,0 +1,62 @@
+' Gambas class file
+PRIVATE $shellProcess AS Process
+PRIVATE $shellText AS String
+
+PUBLIC SUB Process_Read()
+  DIM sLine AS String
+  'When a shell command is ran, take the output and put it in a string.
+  READ #LAST, sLine, -256
+  $shellText = $shellText & sLine
+  PRINT sline
+END
+
+PUBLIC SUB Process_Error(errorMsg AS String)
+  GlobalFunc.WriteLog(errorMsg, "4E")
+  Message.Error(errorMsg)
+  ME.Close
+END
+
+PUBLIC SUB Form_Activate()
+  IF Global.Settings["General/HideMain", -1] = -1 THEN
+    Main.Visible = FALSE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Close()
+  IF Main.Visible = FALSE THEN
+    Main.Visible = TRUE
+  ENDIF
+END 
+
+PUBLIC SUB Form_Open()
+  ME.Center
+  Label1.Text = "Connecting to update server..."
+  Timer1.Delay = 30
+  Timer1.Start
+END
+
+
+
+PUBLIC SUB CheckForUpdates()
+  DIM updateFile AS String
+  DIM updateFileName AS String
+  DIM tmpFile AS String
+
+  updateFile = "http://update.kodieg.com/adbuix.ddata"
+  updateFileName = Mid(updateFile, (RInStr(updateFile, "/", -1) + 1), Len(updateFile))
+  tmpFile = "/tmp" &/ updateFileName
+
+  $shellProcess = SHELL "wget " & updateFile & " -qO " & tmpFile WAIT FOR READ
+
+  IF Exist(tmpFile) THEN 
+    Label1.Text = "File Downloaded!"
+  ELSE 
+    Label1.Text = "Der was an error. :("
+  ENDIF
+END
+
+PUBLIC SUB Timer1_Timer()
+
+  CheckForUpdates()
+
+END

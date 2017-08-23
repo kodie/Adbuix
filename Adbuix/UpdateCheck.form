@@ -1,0 +1,18 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,59,14)
+  Text = ("")
+  { Label1 Label
+    MoveScaled(1,1,56,4)
+    Text = ("[Place Holder]")
+  }
+  { Button1 Button
+    MoveScaled(39,6,18,4)
+    Text = ("Cancel")
+  }
+  { Timer1 #Timer
+    #X = 14
+    #Y = 42
+  }
+}

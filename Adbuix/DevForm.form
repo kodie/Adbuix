@@ -1,0 +1,42 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,75,35)
+  Text = ("Developer Functions")
+  Border = Window.Fixed
+  { Button1 Button
+    MoveScaled(2,2,23,5)
+    Text = ("Start ADB")
+  }
+  { Button2 Button
+    MoveScaled(2,8,23,5)
+    Text = ("Kill ADB")
+  }
+  { Button3 Button
+    MoveScaled(2,14,23,5)
+    Text = ("Get number of devices")
+  }
+  { Button4 Button
+    MoveScaled(26,14,23,5)
+    Text = ("Remount current device")
+  }
+  { Button5 Button
+    MoveScaled(26,2,23,5)
+    Text = ("Open Partition Manager")
+  }
+  { Button6 Button
+    MoveScaled(26,8,23,5)
+    Text = ("Open Shell Console")
+  }
+  { TextBox1 TextBox
+    MoveScaled(3,23,54,3)
+    Text = ("drwxrwx--- system   cache             2010-01-27 21:05 cache folder")
+  }
+  { SpinBox1 SpinBox
+    MoveScaled(18,27,9,3)
+  }
+  { Button7 Button
+    MoveScaled(29,27,14,4)
+    Text = ("Button7")
+  }
+}

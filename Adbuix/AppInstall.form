@@ -1,0 +1,36 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,47,18)
+  Text = ("Installing an Application...")
+  Icon = Picture["application_add.png"]
+  Border = Window.Fixed
+  { Label1 Label
+    MoveScaled(1,1,45,2)
+    Text = ("What type of application would you like to install?")
+  }
+  { RadioButton1 RadioButton
+    MoveScaled(3,4,36,2)
+    Text = ("Normal")
+    Value = True
+  }
+  { RadioButton2 RadioButton
+    MoveScaled(3,7,36,2)
+    Text = ("Private")
+  }
+  { RadioButton3 RadioButton
+    MoveScaled(3,10,36,2)
+    Text = ("System")
+  }
+  { Button1 Button
+    MoveScaled(19,13,13,4)
+    Text = ("Ok")
+    Picture = Picture["accept.png"]
+  }
+  { Button2 Button
+    MoveScaled(33,13,13,4)
+    Text = ("Cancel")
+    Picture = Picture["cancel.png"]
+    Cancel = True
+  }
+}

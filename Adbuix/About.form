@@ -1,0 +1,75 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,44,44)
+  Text = ("About Adbuix")
+  Icon = Picture["information.png"]
+  Border = Window.Fixed
+  { Label1 Label
+    MoveScaled(0,10,44,4)
+    Font = Font["Bold,+6"]
+    Text = ("Adbuix 0.1.2")
+    Alignment = Align.Center
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(18,1,7,8)
+    Picture = Picture["adbuixlogo_small.png"]
+  }
+  { TabStrip1 TabStrip
+    MoveScaled(1,19,42,20)
+    Count = 3
+    Index = 0
+    Text = ("Tab 0")
+    { TextLabel1 TextLabel
+      MoveScaled(8,2,26,3)
+      Font = Font["Bold"]
+      Text = ("Made by Kodie Grantham")
+      Alignment = Align.Center
+    }
+    { TextLabel2 TextLabel
+      MoveScaled(12,6,17,3)
+      Font = Font["Underline"]
+      Foreground = &H0000FF&
+      Mouse = Mouse.Pointing
+      Text = ("http://kodieg.com")
+      Alignment = Align.Center
+    }
+    { TextLabel3 TextLabel
+      MoveScaled(9,10,24,3)
+      Font = Font["Underline"]
+      Foreground = &H0000FF&
+      Text = ("kodiewithak@gmail.com")
+      Alignment = Align.Center
+    }
+    Index = 1
+    Text = ("Tab 1")
+    { TextArea1 TextArea
+      MoveScaled(1,1,39,14)
+      Text = ("Adbuix was made by Kodie Grantham. (kodieg.com)\n\nComplied using Gambas 2 by Beno\xC3\xAEt Minisini. (gambas.sourceforge.net)\n\nSilk Icons made by Mark James. (famfamfam.com)\n\nThank you to all of the developers from the xda forums. (xda-developers.com)\n\nAndroid is a trademark of Google Inc. Use of this trademark is subject to Google Permissions. (http://www.google.com/permissions/index.html)")
+      Wrap = True
+    }
+    Index = 2
+    Text = ("Tab 2")
+    { TextArea2 TextArea
+      MoveScaled(1,1,39,14)
+      Text = ("Adbuix is free software; you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation; either version 2 of the License, or\n(at your option) any later version.\n\nAdbuix is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with Adbuix; if not, write to the Free Software Foundation, Inc.,\n51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA")
+      Wrap = True
+    }
+    Index = 0
+  }
+  { Button1 Button
+    MoveScaled(32,40,11,3)
+    Text = ("Close")
+    Picture = Picture["accept.png"]
+  }
+  { Label2 Label
+    MoveScaled(0,14,44,5)
+    Text = ("A graphical user interface for\nthe Android Debug Bridge.")
+    Alignment = Align.Center
+  }
+  { Label3 Label
+    MoveScaled(1,41,23,2)
+    Text = ("\xC2\xA92010 Kodie Grantham")
+    Alignment = Align.Left
+  }
+}

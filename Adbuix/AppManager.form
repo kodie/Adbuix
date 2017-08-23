@@ -1,0 +1,60 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,61,48)
+  Text = ("Adbuix Application Manager")
+  Icon = Picture["application_cascade.png"]
+  Border = Window.Fixed
+  { Button1 Button
+    MoveScaled(46,41,14,4)
+    Visible = False
+    Enabled = False
+    Text = ("Properties")
+    Picture = Picture["application_edit.png"]
+  }
+  { Button2 Button
+    MoveScaled(41,43,19,4)
+    Text = ("Install")
+    Picture = Picture["application_add.png"]
+  }
+  { Button3 Button
+    MoveScaled(21,43,19,4)
+    Text = ("Uninstall")
+    Picture = Picture["application_delete.png"]
+  }
+  { Button4 Button
+    MoveScaled(1,43,19,4)
+    Text = ("Backup")
+    Picture = Picture["application_go.png"]
+  }
+  { ListView1 ListView
+    MoveScaled(1,5,59,37)
+    Sorted = True
+  }
+  { TglNormal ToggleButton
+    MoveScaled(1,1,12,3)
+    Text = ("Normal")
+    Picture = Picture["application.png"]
+    Value = True
+  }
+  { TglPrivate ToggleButton
+    MoveScaled(14,1,12,3)
+    Text = ("Private")
+    Picture = Picture["application_key.png"]
+    Value = True
+  }
+  { TglSystem ToggleButton
+    MoveScaled(27,1,12,3)
+    Text = ("System")
+    Picture = Picture["application_lightning.png"]
+  }
+  { TextBox1 TextBox
+    MoveScaled(40,1,16,3)
+    Text = ("Search...")
+  }
+  { Button5 Button
+    MoveScaled(57,1,3,3)
+    Text = ("")
+    Picture = Picture["magnifier.png"]
+  }
+}
